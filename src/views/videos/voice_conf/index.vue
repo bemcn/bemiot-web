@@ -1,0 +1,302 @@
+<template>
+  <n-card :bordered="false">
+    <BasicForm
+      :showAdvancedButton="false"
+      @register="register"
+      @submit="handleSubmit"
+      @reset="handleReset"
+    >
+      <template #statusSlot="{ model, field }">
+        <n-input v-model:value="model[field]" />
+      </template>
+    </BasicForm>
+  </n-card>
+  <n-card :bordered="false" class="mt-3">
+    <BasicTable
+      :columns="columns"
+      :request="loadDataTable"
+      :row-key="(row) => row.serverId"
+      ref="actionRef"
+      :actionColumn="actionColumn"
+      :scroll-x="1280"
+      :striped="true"
+    >
+      <template #tableTitle>
+        <n-button v-if="addAuth" type="primary" @click="handleAdd">
+          <template #icon>
+            <n-icon>
+              <PlusOutlined />
+            </n-icon>
+          </template>
+          新增
+        </n-button>
+      </template>
+
+      <template #toolbar> </template>
+    </BasicTable>
+  </n-card>
+  <ViewInfo
+    :showModel="showViewModal"
+    :params="formParams"
+    @close="() => (showViewModal = false)"
+  />
+  <InfoFromModal
+    :showModel="showModal"
+    :title="modalTitle"
+    :params="formParams"
+    :action="action"
+    @close="() => (showModal = false)"
+    @submit="reloadTable"
+  />
+</template>
+
+<script lang="ts" setup>
+  import { h, reactive, ref } from 'vue';
+  import { BasicTable, TableAction } from '@/components/Table';
+  import { BasicForm, FormSchema, useForm } from '@/components/Form/index';
+  import { PageVideoServer } from '@/types/VideoModel';
+  import {
+    getVideoServerPageList,
+    videoServerStatus,
+    delVideoServerById,
+    VideoServerPageParams,
+  } from '@/api/video/videoServer';
+  import { columns } from './columns';
+  import { useUserStore } from '@/store/modules/user';
+  import { PlusOutlined } from '@vicons/antd';
+  // @ts-ignore
+  import ViewInfo from './ViewInfo.vue';
+  // @ts-ignore
+  import InfoFromModal from './InfoFromModal.vue';
+
+  // 获取权限
+  const userStore = useUserStore();
+  const auth = userStore.parseAuthByModule('product');
+  const viewAuth = auth.view;
+  const addAuth = auth.add;
+  const editAuth = auth.edit;
+  const deleteAuth = auth.delete;
+
+  const queryRef: any = ref(null);
+  const actionRef = ref();
+  const showModal = ref(false);
+  const modalTitle = ref('');
+  const action = ref('');
+  const showViewModal = ref(false);
+  const formParams = ref<any>({});
+
+  // 查询表单渲染
+  const schemas: FormSchema[] = [
+    {
+      field: 'key',
+      component: 'NInput',
+      label: '关键字',
+      componentProps: {
+        placeholder: '请输入名称',
+        onInput: (e: any) => {
+          console.log(e);
+        },
+      },
+    },
+  ];
+
+  // 根据权限渲染表格操作列
+  const actionCell = () => {
+    if (viewAuth || editAuth || deleteAuth) {
+      return reactive({
+        width: 240,
+        title: '操作',
+        key: 'action',
+        fixed: 'right',
+        render(record: Recordable) {
+          return h(TableAction as any, {
+            style: 'button',
+            actions: [
+              {
+                label: '详情',
+                onClick: handleView.bind(null, record),
+              },
+              {
+                label: '编辑',
+                onClick: handleEdit.bind(null, record),
+                ifShow: () => {
+                  return editAuth;
+                },
+              },
+              {
+                label: record.status === 1 ? '停用' : '启用',
+                onClick: handleStatus.bind(null, record),
+                ifShow: () => {
+                  return editAuth;
+                },
+              },
+              {
+                label: '删除',
+                onClick: handleDel.bind(null, record),
+                ifShow: () => {
+                  return editAuth;
+                },
+              },
+            ],
+          });
+        },
+      });
+    } else {
+      return null;
+    }
+  };
+  // 表格操作列对象
+  const actionColumn = actionCell();
+  // 查询表单对象
+  const [register, { getFieldsValue }] = useForm({
+    gridProps: { cols: '1 s:1 m:2 l:4 xl:5 2xl:5' },
+    labelWidth: 80,
+    schemas,
+  });
+
+  /**
+   * 获取表格数据
+   * @param res 响应数据
+   */
+  const loadDataTable = async (res: any) => {
+    const fieldsValue = getFieldsValue();
+    let params = {} as VideoServerPageParams;
+    if (fieldsValue.hasOwnProperty('key')) {
+      params.key = fieldsValue.key;
+    }
+    params.index = res.page || res.current;
+    params.size = res.pageSize || res.size;
+    queryRef.value = getFieldsValue();
+
+    const result = (await getVideoServerPageList(params)) as unknown as {
+      status: string;
+      message: string;
+      data: PageVideoServer;
+    };
+    if (result.status === 'success') {
+      console.log(result.data);
+      return result.data;
+    } else {
+      return {
+        records: [],
+        total: 0,
+        current: res.page || res.current,
+        pages: 1,
+        size: res.pageSize || res.size,
+      };
+    }
+  };
+
+  // 刷新表格
+  const reloadTable = () => {
+    actionRef.value.reload();
+  };
+
+  // 详情
+  const handleView = (record: Recordable) => {
+    formParams.value = {
+      serverId: record.serverId,
+      serverName: record.serverName,
+      serverType: record.serverType,
+      serviceConfig: record.serviceConfig,
+      config: record.config,
+      status: record.status,
+      createTime: record.createTime,
+    };
+    showViewModal.value = true;
+  };
+
+  // 新增
+  const handleAdd = () => {
+    formParams.value = {
+      serverId: 0,
+      serverKey: '',
+      serverName: '',
+      serverType: 'BEM SIP',
+      serviceConfig: '',
+      config: {
+        sipId: '',
+        sipDomain: '',
+        sipAddress: '',
+        sipPort: '5060',
+        sipPass: '',
+        protocol: 'UDP',
+        transmission: 'UDP',
+        heartInterval: '30',
+        regExpiration: '3600',
+      },
+    };
+    modalTitle.value = '新增服务器';
+    action.value = 'add';
+    showModal.value = true;
+  };
+
+  // 编辑
+  const handleEdit = (record: Recordable) => {
+    formParams.value = {
+      serverId: record.serverId,
+      serverKey: record.serverKey,
+      serverName: record.serverName,
+      serverType: record.serverType,
+      serviceConfig: record.serviceConfig,
+      config: record.config,
+    };
+    modalTitle.value = '编辑服务器';
+    action.value = 'edit';
+    showModal.value = true;
+  };
+
+  const handleStatus = async (record: Recordable) => {
+    const params = {
+      id: record.serverId,
+    };
+
+    try {
+      const result = (await videoServerStatus(params)) as unknown as {
+        status: string;
+        message: string;
+      };
+
+      if (result.status === 'success') {
+        window['$message'].success('变更状态成功');
+        reloadTable();
+      } else {
+        window['$message'].error(result.message);
+      }
+    } catch (error) {
+      window['$message'].error('变更状态失败');
+    }
+  };
+
+  const handleDel = async (record: Recordable) => {
+    const params = {
+      id: record.serverId,
+    };
+
+    try {
+      const result = (await delVideoServerById(params)) as unknown as {
+        status: string;
+        message: string;
+      };
+
+      if (result.status === 'success') {
+        window['$message'].success('删除成功');
+        reloadTable();
+      } else {
+        window['$message'].error(result.message);
+      }
+    } catch (error) {
+      window['$message'].error('删除失败');
+    }
+  };
+
+  // 查询点击
+  const handleSubmit = () => {
+    reloadTable();
+  };
+
+  // 重置点击
+  const handleReset = () => {
+    reloadTable();
+  };
+</script>

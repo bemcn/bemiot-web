@@ -1,0 +1,62 @@
+import { RouteRecordRaw } from 'vue-router';
+import { Layout } from '@/router/constant';
+import { ExclamationCircleOutlined } from '@vicons/antd';
+import { renderIcon } from '@/utils/index';
+
+const routes: Array<RouteRecordRaw> = [
+  {
+    path: '/exception',
+    name: 'Exception',
+    redirect: '/exception/403',
+    component: Layout,
+    meta: {
+      title: '异常页面',
+      icon: renderIcon(ExclamationCircleOutlined),
+      hidden: true,
+    },
+    children: [
+      {
+        path: '403',
+        name: 'exception-403',
+        meta: {
+          title: '403',
+        },
+        component: () => import('@/views/exception/403.vue'),
+      },
+      {
+        path: '404',
+        name: 'exception-404',
+        meta: {
+          title: '404',
+        },
+        component: () => import('@/views/exception/404.vue'),
+      },
+      {
+        path: '500',
+        name: 'exception-500',
+        meta: {
+          title: '500',
+        },
+        component: () => import('@/views/exception/500.vue'),
+      },
+      {
+        path: 'icon',
+        name: 'exception-icon',
+        meta: {
+          title: 'icon',
+        },
+        component: () => import('@/views/exception/iconView.vue'),
+      },
+      {
+        path: 'about',
+        name: 'exception-about',
+        meta: {
+          title: '关于',
+        },
+        component: () => import('@/views/exception/about.vue'),
+      },
+    ],
+  },
+];
+
+export default routes;
