@@ -1,5 +1,6 @@
 <template>
   <div class="run-monitor">
+<<<<<<< HEAD
     <div class="mt-2">
       <!-- 饼图统计 -->
       <n-grid cols="1 m:3 l:3 xl:4 2xl:4" responsive="screen" :x-gap="16" :y-gap="16">
