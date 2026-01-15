@@ -91,8 +91,6 @@
     usageData2: [],
   });
 
-  let timer: ReturnType<typeof setInterval> | null = null;
-
   // 初始化图表数据
   const initChartData = () => {
     // 获取60秒前的时间戳
@@ -149,7 +147,7 @@
   const initializeSSE = () => {
     // 如果已经存在连接，先关闭它
     if (eventSource) {
-      console.log('关闭已存在的sse连接：', eventSource);
+      //console.log('关闭已存在的sse连接：', eventSource);
       closeEventSource();
     }
 
@@ -163,20 +161,20 @@
     clientId.value = createClientId();
     // 定义SSE链接参数
     let url = apiUrl + '/monitorsCache/connect?clientId=' + clientId.value;
-    console.log('sse连接地址：', url);
+    //console.log('sse连接地址：', url);
     // 监听连接打开事件
     eventSource = new EventSource(url);
     eventSource.onopen = () => {
-      console.log('建立 SSE 连接成功');
+      //console.log('建立 SSE 连接成功');
     };
 
     // 监听消息事件
     eventSource.onmessage = (event) => {
-      console.log('收到消息：', event.data);
+      //console.log('收到消息：', event.data);
       // 收到消息
       const result = JSON.parse(event.data);
       if (result.data) {
-        console.log('收到数据：', result.data);
+        //console.log('收到数据：', result.data);
 
         // 处理数据
         const nowTimeLong = Date.now();
@@ -274,10 +272,6 @@
 
   // 组件卸载前清理定时器
   onBeforeUnmount(() => {
-    if (timer) {
-      clearInterval(timer);
-      timer = null;
-    }
     closeEventSource();
   });
 </script>

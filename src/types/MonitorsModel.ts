@@ -63,13 +63,11 @@ export interface MonitorDataTwo {
   usageData1: number[];
   usageData2: number[];
 }
-<<<<<<< HEAD
 
 export interface MonitorDataDrive {
   driveCode: string;
   driveName: string;
   timeData: string[];
-  usageData: number[];
+  usageData1: number[];
+  usageData2: number[];
 }
-=======
->>>>>>> 46858a7a0528e4c33e4543048539def5af4a05e3

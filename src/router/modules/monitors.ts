@@ -62,18 +62,6 @@ const routes: Array<RouteRecordRaw> = [
         component: () => import('@/views/monitors/message_monitor/index.vue'),
       },
       {
-<<<<<<< HEAD
-=======
-        path: 'data_monitor',
-        name: `${routeName}_data_monitor`,
-        meta: {
-          title: '数据监控',
-          permissions: ['data_monitor'],
-        },
-        component: () => import('@/views/monitors/data_monitor/index.vue'),
-      },
-      {
->>>>>>> 46858a7a0528e4c33e4543048539def5af4a05e3
         path: 'run_monitor',
         name: `${routeName}_run_monitor`,
         meta: {

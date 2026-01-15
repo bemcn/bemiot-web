@@ -18,7 +18,8 @@
       driveCode: string;
       driveName: string;
       timeData: string[];
-      usageData: number[];
+      usageData1: number[];
+      usageData2: number[];
     };
   }
 
@@ -27,7 +28,8 @@
       driveCode: '',
       driveName: '',
       timeData: [],
-      usageData: [],
+      usageData1: [],
+      usageData2: [],
     }),
   });
 
@@ -45,15 +47,20 @@
     chart = init(chartRef.value);
 
     // 计算数据最大值的1.5倍，用于设置Y轴最大值
-    const maxDataValue = props.data.usageData.length > 0 ? Math.max(...props.data.usageData) : 100;
-    const yAxisMax = maxDataValue * 1.5;
 
     const option = {
       tooltip: {
         trigger: 'axis',
       },
+      legend: {
+        data: ['数据采集', '指令下发'],
+        textStyle: {
+          fontSize: 10,
+        },
+        top: 0,
+      },
       grid: {
-        top: '10%',
+        top: '20%',
         left: '3%',
         right: '3%',
         bottom: '15%', // 增加底部边距为X轴标签留出更多空间
@@ -73,8 +80,6 @@
       yAxis: {
         type: 'value',
         show: true,
-        min: 0,
-        max: yAxisMax,
         axisLabel: {
           fontSize: 10,
           color: '#666',
@@ -82,7 +87,20 @@
       },
       series: [
         {
-          data: props.data.usageData,
+          name: '数据采集',
+          data: props.data.usageData1,
+          type: 'line',
+          areaStyle: {
+            color: '#34c388',
+          },
+          lineStyle: {
+            color: '#34c388',
+          },
+          showSymbol: false,
+        },
+        {
+          name: '指令下发',
+          data: props.data.usageData2,
           type: 'line',
           areaStyle: {
             color: '#7189d0',
@@ -121,31 +139,19 @@
     () => props.data,
     () => {
       if (chart) {
-        // 计算新数据的最大值并更新Y轴范围
-        const maxDataValue =
-          props.data.usageData.length > 0 ? Math.max(...props.data.usageData) : 100;
-        const yAxisMax = maxDataValue * 1.5;
-
         chart.setOption({
           xAxis: {
             data: props.data.timeData,
           },
-          yAxis: {
-            max: yAxisMax,
-          },
           series: [
             {
-              data: props.data.usageData,
+              data: props.data.usageData1,
+            },
+            {
+              data: props.data.usageData2,
             },
           ],
         });
-
-        // 数据更新后也需要重新调整大小
-        setTimeout(() => {
-          if (chart) {
-            chart.resize();
-          }
-        }, 100);
       }
     },
     { deep: true }
@@ -168,12 +174,12 @@
 
 <style lang="less" scoped>
   .monitor-card {
-    height: 200px;
+    height: 250px;
     margin-bottom: 15px;
     overflow: hidden; // 确保卡片内容不会溢出
     .chart-container {
       width: 100%;
-      height: 150px;
+      height: 200px;
       position: relative; // 添加定位上下文
       .chart {
         width: 100%;
