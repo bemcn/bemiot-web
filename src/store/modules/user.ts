@@ -6,10 +6,12 @@ import {
   TIME_OUT,
   CURRENT_USER,
   PERMISSIONS,
-  TABS_ROUTES,
+  AUTO_LOGIN,
+  IS_SCREENLOCKED,
 } from '@/store/mutation-types';
 import { useGlobSetting } from '@/hooks/setting';
 
+import { getUserInfo as getUserInfoApi } from '@/api/system/user';
 import { getLoginCode, chkLogin, loginOut } from '@/api/login/login';
 import { storage } from '@/utils/Storage';
 import { encryptUtils } from '@/utils/encryptUtils';
@@ -88,40 +90,27 @@ export const useUserStore = defineStore({
     },
 
     // 登录
-    async login(params: any) {
+    async login(params: any, autoLogin: boolean) {
       const result = await chkLogin(params);
       if (result.status === 'success') {
         const { data } = result;
-        const exTimer = 7000 * 1000;
+        let ex = 7000;
+        if (autoLogin) {
+          ex = 2591800;
+        }
+        const exTimer = ex * 1000;
         const timestamp = new Date().getTime() + exTimer;
-        const permissions = encryptUtils.base64Encode(data.permissions);
 
-        const tabRoutes = {
-          value: [
-            {
-              fullPath: '/dashboard/console',
-              hash: '',
-              meta: {
-                title: '控制台',
-                affix: true,
-              },
-              name: 'dashboard_console',
-              params: {},
-              path: '/dashboard/console',
-              query: {},
-            },
-          ],
-          expire: 1766043158040,
-        };
-        const tabRoutesStr =
-          '{"value":"[{"fullPath":"/dashboard/console","hash":"","meta":{"title":"控制台","affix":true},"name":"dashboard_console","params":{},"path":"/dashboard/console","query":{}}]","expire":1766044179102}';
-
-        storage.set(ACCESS_TOKEN, data.accessToken, 7200);
-        storage.set(REFRESH_TOKEN, data.refreshToken, 7200);
-        storage.set(TIME_OUT, timestamp, 7200);
-        storage.set(CURRENT_USER, data.user);
-        storage.set(PERMISSIONS, permissions);
-        storage.set(TABS_ROUTES, tabRoutesStr);
+        storage.set(ACCESS_TOKEN, data.accessToken, ex);
+        storage.set(REFRESH_TOKEN, data.refreshToken, ex);
+        storage.set(TIME_OUT, timestamp);
+        storage.set(CURRENT_USER, data.user, ex);
+        storage.set(PERMISSIONS, data.permissions, ex);
+        storage.set(AUTO_LOGIN, autoLogin);
+        storage.set(IS_SCREENLOCKED, false);
+        if (autoLogin) {
+          storage.setCookie(ACCESS_TOKEN, data.accessToken, ex);
+        }
         this.setAccessToken(data.accessToken);
         this.setRefreshToken(data.refreshToken);
         this.setUserInfo(data.user);
@@ -166,6 +155,7 @@ export const useUserStore = defineStore({
 
     // 登出
     async logout() {
+      const autoLogin = storage.get(AUTO_LOGIN, false);
       const refreshToken = storage.get(REFRESH_TOKEN, '');
       const params = {
         refreshToken,
@@ -181,6 +171,9 @@ export const useUserStore = defineStore({
       storage.remove(TIME_OUT);
       storage.remove(CURRENT_USER);
       storage.remove(PERMISSIONS);
+      if (!autoLogin) {
+        storage.removeCookie(ACCESS_TOKEN);
+      }
     },
   },
 });

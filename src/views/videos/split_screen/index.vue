@@ -92,13 +92,8 @@
             </template>
             <div class="card-content">
               <n-grid :x-gap="6" :y-gap="6" :cols="splitNum" style="height: 100%">
-                <n-gi
-                  v-for="num in blockNum"
-                  :key="num"
-                  :class="selectIndex === num ? 'v-box active' : 'v-box'"
-                  @click="handleBoxClick(num)"
-                >
-                  <div :id="'video_' + num" class="default-box"></div>
+                <n-gi v-for="num in blockNum" :key="num" :class="selectIndex === num ? 'v-box active' : 'v-box'" @click="handleBoxClick(num)">
+                  <div class="default-box">{{ num }}</div>
                 </n-gi>
               </n-grid>
             </div>
@@ -111,50 +106,34 @@
 <script lang="ts" setup>
   import { ref, onMounted } from 'vue';
   import { getDevicesTree } from '@/api/devices/device';
-  import { TreeOption } from 'naive-ui';
+  import { getDeviceGroupList } from '@/api/base/deviceGroup';
+  import { getProductList } from '@/api/devices/product';
+  import { TreeOption, useMessage } from 'naive-ui';
   // @ts-ignore
   import { CaretRightFilled, ExpandOutlined, AppstoreOutlined, TableOutlined } from '@vicons/antd';
   // @ts-ignore
   import MapBox from './MapBox.vue';
   import { debounce } from 'lodash-es';
-  import { addStreamProxy, delStreamProxy } from '@/api/video/media';
-  import { StreamProxyParam } from '@/types/MediaParams';
-  import { onBeforeRouteLeave } from 'vue-router';
 
-  declare const Jessibuca: any;
-
+  const queryParams = ref({
+    types: null,
+    groupId: null,
+    userId: null,
+    spaceId: null as number | null,
+    productId: null,
+  });
   const treeOptions = ref<any[]>([]);
   const queryKey = ref('');
   const splitNum = ref(1);
   const blockNum = ref(1);
   const selectIndex = ref(0);
-  const channelList = ref<any[]>([]);
-  const jessibucaPlayers = ref<any[]>([]);
-  const config: any = {
-    isFlv: true, // 是否使用flv格式
-    showBandwidth: true, // 是否显示带宽使用情况
-    loadingText: '加载中...',
-    decoder: '/jessibuca/decoder.js',
-    hiddenAutoPause: true,
-    hasAudio: true,
-    recordType: 'mp4',
-    controlAutoHide: true,
-    operateBtns: {
-      // 配置按钮对象
-      screenshot: true, // 是否启用截图功能
-      fullscreen: true, // 是否启用全屏功能
-      play: true, // 是否启用播放功能
-      audio: true, // 是否启用音频功能
-      record: true, // 是否启用录制功能
-    },
-  };
 
   /**
    * 获取设备位置树
    */
   const createTreeData = async () => {
     const params = {
-      types: '3,4',
+      types: 3,
       lastType: 2,
     };
 
@@ -172,47 +151,16 @@
   const nodeProps = ({ option }: { option: TreeOption }) => {
     return {
       onClick() {
-        const treeType = option.type + '';
-        if (treeType === 'channel') {
-          // 判断是否已在播放列表
-          let isPlayer = false;
-          for (let i = 0; i < 9; i++) {
-            if (channelList.value[i].channelId === option.id) {
-              isPlayer = true;
-              break;
-            }
+        if (option.key === '0') {
+          if (queryParams.value.spaceId !== 0) {
+            queryParams.value.spaceId = 0;
+            //reloadTable();
           }
-
-          // 判断是否超过当前显示矩阵
-          let index = 0;
-          if (selectIndex.value > 0) {
-            index = selectIndex.value;
-
-            if (isPlayer) {
-              window['$message'].error('视频通道已在播放列表中，请勿重复添加！');
-            } else {
-              removeVideo(index);
-              if (selectIndex.value > 0) {
-                channelList.value[index - 1] = {
-                  channelId: option.id,
-                  channelName: option.label,
-                  deviceId: option.code,
-                  smtpUrl: option.url,
-                  key: '',
-                };
-              } else {
-                channelList.value[index - 1] = {
-                  channelId: option.id,
-                  channelName: option.label,
-                  deviceId: option.code,
-                  smtpUrl: option.url,
-                  key: '',
-                };
-              }
-              initPlayer(index);
-            }
-          } else {
-            window['$message'].error('请指定右侧播放的屏幕');
+        } else {
+          const changeId = option.key ? parseInt(option.key.toString(), 10) : 0;
+          if (changeId > 0 && changeId !== queryParams.value.spaceId) {
+            queryParams.value.spaceId = changeId;
+            //reloadTable();
           }
         }
       },
@@ -237,17 +185,7 @@
   // 分屏切换
   const handleSplit = (num: number) => {
     splitNum.value = num;
-    const total = num * num;
-    blockNum.value = total;
-    // 如果channelList 的数组长度大于splitNum，则删除末尾多余的内容；如果小于，则增加空白的内容
-    for (let i = 0; i < 9; i++) {
-      const index = i + 1;
-      if (index > total) {
-        // 移除视频
-        removeVideo(index);
-      }
-    }
-    selectIndex.value = 0;
+    blockNum.value = num * num;
   };
 
   // 选中分屏
@@ -259,122 +197,8 @@
     }
   };
 
-  // 初始化播放视频
-  const initPlayer = async (index: number) => {
-    const n = index - 1;
-    const channel = channelList.value[n];
-
-    // 调用接口获取视频流地址
-    const params: StreamProxyParam = {
-      app: channel.deviceId,
-      stream: channel.channelId,
-      url: channel.smtpUrl,
-      enableAudio: 1,
-    };
-
-    const result = (await addStreamProxy(params)) as unknown as {
-      status: string;
-      code: number;
-      message: string;
-      data: any;
-    };
-
-    if (result.status === 'success') {
-      const refData = result.data;
-      channel.key = refData.key;
-      const url = refData.wsFlvUrl;
-
-      // 确保元素已经渲染
-      setTimeout(() => {
-        const divId = 'video_' + index;
-        const container = document.getElementById(divId);
-        if (container && !jessibucaPlayers.value[n]) {
-          // 创建播放器
-          jessibucaPlayers.value[n] = new Jessibuca({
-            container,
-            ...config,
-          });
-          jessibucaPlayers.value[n].play(url);
-        } else if (container) {
-          // 如果 ckplayer 还未加载完成，稍后重试
-          setTimeout(() => initPlayer(index), 100);
-        }
-      }, 100);
-    } else {
-      channelList.value[n] = {
-        channelId: '',
-        channelName: '',
-        deviceId: '',
-        smtpUrl: '',
-        key: '',
-      };
-      window['$message'].error('获取视频流地址失败');
-    }
-  };
-
-  // 移除视频
-  const removeVideo = async (index: number) => {
-    const n = index - 1;
-    // 销毁播放器实例
-    if (jessibucaPlayers.value[n]) {
-      try {
-        jessibucaPlayers.value[n].destroy();
-        jessibucaPlayers.value[n] = null;
-      } catch (e) {
-        console.log('Error quitting player - ' + n + ':', e);
-      }
-    }
-
-    const channel = channelList.value[n];
-    const mediaKey = channel.key;
-    if (mediaKey !== '') {
-      const params = {
-        key: mediaKey,
-      };
-
-      const result = (await delStreamProxy(params)) as unknown as {
-        status: string;
-        message: string;
-      };
-      if (result.status !== 'success') {
-        window['$message'].error('关闭视频流失败');
-      }
-    }
-    channelList.value[n] = {
-      channelId: '',
-      channelName: '',
-      deviceId: '',
-      smtpUrl: '',
-      key: '',
-    };
-  };
-
   onMounted(async () => {
     treeOptions.value = await createTreeData();
-    for (let i = 0; i < 9; i++) {
-      channelList.value.push({
-        channelId: '',
-        channelName: '',
-        deviceId: '',
-        smtpUrl: '',
-        key: '',
-      });
-      jessibucaPlayers.value.push(null);
-    }
-  });
-
-  onBeforeRouteLeave((_to, _from, next) => {
-    for (let i = 0; i < 9; i++) {
-      channelList.value.push({
-        channelId: '',
-        channelName: '',
-        deviceId: '',
-        smtpUrl: '',
-        key: '',
-      });
-      removeVideo(i + 1);
-      next();
-    }
   });
 </script>
 

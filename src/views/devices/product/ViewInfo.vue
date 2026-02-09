@@ -157,9 +157,6 @@
         name = '监控设备';
         break;
       case 4:
-        name = '视频存储设备';
-        break;
-      case 5:
         name = '网关子设备';
         break;
       default:
@@ -295,7 +292,7 @@
     border-radius: 6px;
   }
 
-  :deep(.n-form-item .n-form-item-feedback-wrapper) {
+  /deep/ .n-form-item .n-form-item-feedback-wrapper {
     line-height: 0;
     min-height: 5px;
     font-size: 0;

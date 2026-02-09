@@ -34,12 +34,11 @@
 
     img {
       width: auto;
-      height: 26px;
+      height: 32px;
     }
 
     .title {
       margin: 0;
-      font-size: 16px;
     }
   }
 </style>

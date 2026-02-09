@@ -15,7 +15,7 @@
     <BasicTable
       :columns="columns"
       :request="loadDataTable"
-      :row-key="(row) => row.logId"
+      :row-key="(row) => row.id"
       ref="actionRef"
       :actionColumn="actionColumn"
       :scroll-x="1000"
@@ -23,12 +23,7 @@
       @update:checked-row-keys="onCheckedRow"
     >
       <template #tableTitle>
-        <n-button
-          v-if="deleteAuth"
-          style="margin-left: 10px"
-          type="primary"
-          @click="handleDelArray"
-        >
+        <n-button v-if="deleteLog" style="margin-left: 10px" type="primary" @click="handleDelArray">
           <template #icon>
             <n-icon>
               <DeleteOutlined />
@@ -36,12 +31,6 @@
           </template>
           批量删除
         </n-button>
-        <ExportExcel
-          type="primary"
-          :authShow="exportAuth"
-          :queryData="queryRef"
-          apiPath="/logModelAlarm/exportExcel"
-        />
       </template>
 
       <template #toolbar> </template>
@@ -57,22 +46,13 @@
   import { DeleteOutlined } from '@vicons/antd';
   import { format } from 'date-fns';
   import { useUserStore } from '@/store/modules/user';
-  import {
-    getAlarmLogPageList,
-    delAlarmLog,
-    delAlarmLogs,
-    LogAlarmPageParams,
-  } from '@/api/alarm/logModelAlarm';
-  import { PageLogModelAlarm } from '@/types/AlarmModel';
 
   // 获取权限
   const userStore = useUserStore();
   const auth = userStore.parseAuthByModule('alarm_log');
-  const deleteAuth = auth.delete;
-  const exportAuth = auth.export;
+  const deleteLog = auth.delete;
 
   const actionRef = ref();
-  const queryRef: any = ref(null);
   const checkRow: any = ref(null);
 
   // 查询表单渲染
@@ -85,7 +65,7 @@
         placeholder: '请选择告警级别',
         options: [
           {
-            label: '一般告警',
+            label: '紧急告警',
             value: 1,
           },
           {
@@ -93,7 +73,7 @@
             value: 2,
           },
           {
-            label: '紧急告警',
+            label: '一般告警',
             value: 3,
           },
         ],
@@ -103,32 +83,11 @@
       },
     },
     {
-      field: 'status',
-      component: 'NSelect',
-      label: '状态',
-      componentProps: {
-        placeholder: '请选择告警状态',
-        options: [
-          {
-            label: '告警中',
-            value: 1,
-          },
-          {
-            label: '已解除',
-            value: 2,
-          },
-        ],
-        onInput: (e: any) => {
-          console.log(e);
-        },
-      },
-    },
-    {
-      field: 'identity',
+      field: 'key',
       component: 'NInput',
-      label: '物模型标识',
+      label: '关键字',
       componentProps: {
-        placeholder: '请输入物模型标识',
+        placeholder: '请输入关键字',
         onInput: (e: any) => {
           console.log(e);
         },
@@ -150,7 +109,7 @@
 
   // 根据权限渲染表格操作列
   const actionCell = () => {
-    if (deleteAuth) {
+    if (deleteLog) {
       return reactive({
         width: 100,
         title: '操作',
@@ -164,7 +123,7 @@
                 label: '删除',
                 onClick: handleDel.bind(null, record),
                 ifShow: () => {
-                  return deleteAuth;
+                  return deleteLog;
                 },
               },
             ],
@@ -177,7 +136,7 @@
   const actionColumn = actionCell();
   // 查询表单对象
   const [register, { getFieldsValue }] = useForm({
-    gridProps: { cols: '1 s:1 m:2 l:4 xl:5 2xl:5' },
+    gridProps: { cols: '1 s:1 m:2 l:3 xl:4 2xl:4' },
     labelWidth: 80,
     schemas,
   });
@@ -188,18 +147,14 @@
    */
   const loadDataTable = async (res: any) => {
     const fieldsValue = getFieldsValue();
-    let params = {} as LogAlarmPageParams;
+    let params: any = {};
 
     if (fieldsValue.hasOwnProperty('level')) {
       params.level = fieldsValue.level;
     }
 
-    if (fieldsValue.hasOwnProperty('status')) {
-      params.status = fieldsValue.status;
-    }
-
-    if (fieldsValue.hasOwnProperty('identity')) {
-      params.identity = fieldsValue.identity;
+    if (fieldsValue.hasOwnProperty('key')) {
+      params.key = fieldsValue.key;
     }
 
     if (fieldsValue.hasOwnProperty('dateBetween')) {
@@ -214,25 +169,41 @@
 
     params.index = res.page || res.current;
     params.size = res.pageSize || res.size;
-    queryRef.value = getFieldsValue();
 
-    const result = (await getAlarmLogPageList(params)) as unknown as {
-      status: string;
-      message: string;
-      data: PageLogModelAlarm;
+    // 模拟数据请求
+    const result = {
+      records: [
+        {
+          id: '1',
+          level: 1,
+          deviceName: '温湿度传感器01',
+          content: '设备温度超过阈值，当前温度为55℃',
+          createTime: '2025-10-30T10:30:25',
+        },
+        {
+          id: '2',
+          level: 2,
+          deviceName: '空气质量监测仪03',
+          content: '设备通信中断，超过5分钟未收到数据',
+          createTime: '2025-10-30T09:15:42',
+        },
+        {
+          id: '3',
+          level: 3,
+          deviceName: '智能电表05',
+          content: '设备电池电量低于20%',
+          createTime: '2025-10-30T08:22:17',
+        },
+      ],
+      total: 3,
+      current: 1,
+      pages: 1,
+      size: 10,
     };
 
-    if (result.status === 'success') {
-      return result.data;
-    } else {
-      return {
-        records: [],
-        total: 0,
-        current: params.index,
-        pages: 1,
-        size: params.size,
-      };
-    }
+    // 模拟请求延迟
+    await new Promise((resolve) => setTimeout(resolve, 300));
+    return result;
   };
 
   // 刷新表格
@@ -242,25 +213,8 @@
 
   // 删除
   const handleDel = async (record: Recordable) => {
-    const params = {
-      id: record.logId,
-    };
-
-    try {
-      const result = (await delAlarmLog(params)) as unknown as {
-        status: string;
-        message: string;
-      };
-
-      if (result.status === 'success') {
-        window['$message'].success('删除成功');
-        reloadTable();
-      } else {
-        window['$message'].error(result.message);
-      }
-    } catch (error) {
-      window['$message'].error('删除失败');
-    }
+    window['$message'].success('删除成功');
+    reloadTable();
   };
 
   // 批量选择
@@ -274,21 +228,8 @@
       window['$message'].warning('请至少选择一条记录');
       return;
     }
-    const ids = checkRow.value.join(',');
-    const params = {
-      ids,
-    };
-
-    const result = (await delAlarmLogs(params)) as unknown as {
-      status: string;
-      message: string;
-    };
-    if (result.status === 'success') {
-      window['$message'].success('删除成功');
-      reloadTable();
-    } else {
-      window['$message'].error(result.message);
-    }
+    window['$message'].success('批量删除成功');
+    reloadTable();
   };
 
   // 查询点击

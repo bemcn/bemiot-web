@@ -627,7 +627,7 @@
     width: 100%;
     height: 420px;
     overflow-y: auto;
-    :deep(.n-collapse .n-collapse-item .n-collapse-item__header) {
+    /deep/ .n-collapse .n-collapse-item .n-collapse-item__header {
       padding: 0;
     }
     .auth-box {

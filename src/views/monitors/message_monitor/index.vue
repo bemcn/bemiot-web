@@ -1,7 +1,13 @@
 <template>
   <div class="message-monitor">
-    <div class="mt-2">
-      <!-- 消息分类统计统计 - 占据整行的70%宽度 -->
+    <div class="n-layout-page-header">
+      <n-card :bordered="false" title="消息监控">
+        实时监控系统设备消息情况，包括设备消息统计和区域消息统计等关键指标。
+      </n-card>
+    </div>
+
+    <div class="mt-4">
+      <!-- 设备消息统计 - 占据整行的70%宽度 -->
       <n-grid cols="1 s:1 m:10 l:10 xl:10 2xl:10" responsive="screen" :x-gap="16" :y-gap="16">
         <n-grid-item :span="7">
           <DeviceMessageChart />
@@ -32,13 +38,9 @@
 
 <script lang="ts" setup>
   import { ref, onMounted, onBeforeUnmount } from 'vue';
-  // @ts-ignore
   import DeviceMessageChart from './components/DeviceMessageChart.vue';
-  // @ts-ignore
   import DeviceMessagePie from './components/DeviceMessagePie.vue';
-  // @ts-ignore
   import AreaReceiveChart from './components/AreaReceiveChart.vue';
-  // @ts-ignore
   import AreaSendChart from './components/AreaSendChart.vue';
 
   const loading = ref(true);

@@ -1,5 +1,30 @@
-import { Drive, SpacePosition, DeviceGroup } from './BaseModel';
+import { GeneralModelGroup, ProductClass, Drive, SpacePosition, DeviceGroup } from './BaseModel';
 import { UserInfo } from './SystemModel';
+
+export interface GeneralModel {
+  modelIdentity: string;
+  modelName: string;
+  groupId: number;
+  modelType: number;
+  dataType: string;
+  dataDefinition: string;
+  charts: number;
+  monitor: number;
+  history: number;
+  readonly: number;
+  share: number;
+  remark: string;
+  createTime: string;
+  group?: GeneralModelGroup;
+}
+
+export interface PageGeneralModel {
+  records: GeneralModel[];
+  total: number;
+  current: number;
+  pages: number;
+  size: number;
+}
 
 export interface Firmware {
   firmwareId: number;
@@ -58,7 +83,8 @@ export interface FirmwareUpdateLog {
   logId: number;
   taskId: number;
   taskName: string;
-  deviceId: string;
+  deviceId: number;
+  deviceCode: string;
   deviceName: string;
   version: string;
   status: number;
@@ -75,7 +101,7 @@ export interface PageFirmwareUpdateLog {
 }
 
 export interface Product {
-  productId: string;
+  productId: number;
   productName: string;
   classId: number;
   models: string;
@@ -112,9 +138,8 @@ export interface ProductModel {
   modelId: string;
   modelIdentity: string;
   modelName: string;
-  productId: string;
+  productId: number;
   modelType: number;
-  modelClass: number;
   dataType: string;
   dataDefinition: string;
   charts: number;
@@ -125,40 +150,16 @@ export interface ProductModel {
   createTime: string;
 }
 
-export interface ProductClass {
-  classId: number;
-  className: string;
-  levelId: number;
-  classRoute: string;
-  classRouteName: string;
-  orderNum: number;
-  remark: string;
-}
-
-export interface ProductClassTable {
-  classId: number;
-  className: string;
-  levelId: number;
-  remark: string;
-  orderNum: number;
-  children?: ProductClassTable[] | null;
-}
-
-export interface ProductClassTree {
-  id: number;
-  label: string;
-  children?: ProductClassTree[] | null;
-}
-
 export interface Device {
-  deviceId: string;
+  deviceId: number;
+  deviceCode: string;
   deviceName: string;
-  productId: string;
+  productId: number;
   groupId: number;
   userId: number;
   spaceId: number;
   spaceRoute: number;
-  gatewayId: string;
+  gatewayId: number;
   locateMethod: number;
   openShadow: number;
   netRssi: number;
@@ -169,7 +170,6 @@ export interface Device {
   installImg: string;
   summary: string;
   firmwareVersion: string;
-  channelId: string;
   erCode: string;
   remark: string;
   status: number;
@@ -208,7 +208,8 @@ export interface DeviceMap {
 }
 
 export interface DeviceMapPoints {
-  deviceId: string;
+  deviceId: number;
+  deviceCode: string;
   deviceName: string;
   types: number;
   status: number;
@@ -223,7 +224,7 @@ export interface DeviceMapPoints {
 export interface DeviceParams {
   id: string;
   modelId: string;
-  deviceId: string;
+  deviceId: number;
   paramsId: number;
   driveCode: string;
   groupType: number;
@@ -236,15 +237,12 @@ export interface DeviceParams {
 }
 
 export interface DeviceModel {
-  status: number;
   modelId: string;
   modelIdentity: string;
   modelName: string;
-  deviceId: string;
-  types: number;
-  spaceRoute: string;
+  deviceId: number;
+  deviceCode: string;
   modelType: number;
-  modelClass: number;
   dataType: string;
   dataDefinition: string;
   charts: number;
@@ -252,13 +250,7 @@ export interface DeviceModel {
   history: number;
   readonly: number;
   share: number;
-  orderNum: number;
   createTime: string;
-  paramsData: string;
-  params: DeviceParams[];
-  value: string;
-  outputValue: string;
-  device: Device;
 }
 
 export interface DeviceControls {
@@ -268,42 +260,4 @@ export interface DeviceControls {
   controlRule: string;
   remark: string;
   createTime: string;
-}
-export interface LogModelEvent {
-  ts: number;
-  logId: string;
-  deviceId: string;
-  productId: string;
-  modelIdentity: string;
-  type: string;
-  data: string;
-  description: string;
-  device: Device;
-  product: Product;
-  model: ProductModel;
-}
-export interface PageLogModelEvent {
-  records: LogModelEvent[];
-  total: number;
-  current: number;
-  pages: number;
-  size: number;
-}
-export interface ModelAlarmRules {
-  rulesId: number;
-  productId: string;
-  modelIdentity: string;
-  alarmLevel: number;
-  alarmRules: string;
-  alertsType: number;
-  specifyUsers: string;
-  product: Product;
-  model: ProductModel;
-}
-export interface PageModelAlarmRules {
-  records: ModelAlarmRules[];
-  total: number;
-  current: number;
-  pages: number;
-  size: number;
 }

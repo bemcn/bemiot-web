@@ -8,7 +8,8 @@ export interface DeviceMap {
 }
 
 export interface DeviceMapPoints {
-  deviceId: string;
+  deviceId: number;
+  deviceCode: string;
   deviceName: string;
   types: number;
   status: number;

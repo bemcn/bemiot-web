@@ -24,7 +24,7 @@
                 <n-icon class="text-sn-icon-enter">
                   <CheckCircleFilled />
                 </n-icon>
-                <span class="text-sn-label">已发布</span>
+                <span class="text-sn-label">启用</span>
                 <span class="text-sn-value"
                   ><CountTo :startVal="0" :endVal="iotStatistics.productEnableCount"
                 /></span>
@@ -33,7 +33,7 @@
                 <n-icon class="text-sn-icon-alarm">
                   <StopFilled />
                 </n-icon>
-                <span class="text-sn-label">待发布</span>
+                <span class="text-sn-label">停用</span>
                 <span class="text-sn-value"
                   ><CountTo :startVal="1" :endVal="iotStatistics.productDeactivatedCount"
                 /></span>

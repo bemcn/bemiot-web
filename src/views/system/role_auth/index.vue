@@ -91,7 +91,6 @@
     deleteRoleById,
     deleteRolesByIds,
   } from '@/api/system/role';
-  // @ts-ignore
   import { PlusOutlined, DeleteOutlined } from '@vicons/antd';
   import { columns, roleAuthData } from './columns';
   import { useUserStore } from '@/store/modules/user';

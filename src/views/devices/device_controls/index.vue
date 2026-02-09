@@ -206,7 +206,8 @@
           modelId: 0,
           modelIdentity: '',
           modelName: '',
-          deviceId: '',
+          deviceId: 0,
+          deviceCode: '',
           deviceName: '',
           position: '',
           dataType: 'int',
@@ -240,7 +241,7 @@
   };
 
   // 执行操作
-  const handleRun = async (_record: Recordable) => {
+  const handleRun = async (record: Recordable) => {
     window['$message'].success('执行成功');
   };
 

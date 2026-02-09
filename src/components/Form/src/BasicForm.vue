@@ -331,7 +331,7 @@
     height: 100%;
     margin-left: -3px;
   }
-  :deep(.n-form-item .n-form-item-feedback-wrapper) {
+  ::v-deep(.n-form-item .n-form-item-feedback-wrapper) {
     display: none;
   }
 </style>

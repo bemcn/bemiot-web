@@ -3,10 +3,10 @@ import { RequestBody } from 'alova';
 
 // 定义产品相关接口类型
 export interface ProductModelParams {
-  productId: string;
+  productId: number;
   identity?: string;
   name?: string;
-  modelClass?: number;
+  type?: number;
 }
 
 /**

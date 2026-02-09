@@ -37,7 +37,7 @@
                 <PlusOutlined />
               </n-icon>
             </template>
-            新增
+            添加通用物模型
           </n-button>
           <n-button style="margin-left: 10px" type="primary" @click="handleDelArray">
             <template #icon>
@@ -58,22 +58,17 @@
       </n-space>
     </template>
   </n-modal>
-  <CreateModel
-    :showModel="showCreateModal"
-    :action="action"
-    :params="modelParams"
-    @close="() => (showCreateModal = false)"
-    @submit="saveModel"
+  <SelectModel
+    :showModel="showCheckModal"
+    :keys="keys"
+    :id="localParams?.productId || 0"
+    @close="() => (showCheckModal = false)"
+    @submit="checkKeysCall"
   />
   <ViewInfo
     :showModel="showViewModal"
-    :params="modelParams"
+    :params="viewParams"
     @close="() => (showViewModal = false)"
-  />
-  <AlarmRules
-    :showModel="showRuleModal"
-    :params="modelParams"
-    @close="() => (showRuleModal = false)"
   />
 </template>
 
@@ -93,11 +88,9 @@
   // @ts-ignore
   import { PlusOutlined, DeleteOutlined } from '@vicons/antd';
   // @ts-ignore
-  import CreateModel from './CreateModel.vue';
+  import SelectModel from './SelectModel.vue';
   // @ts-ignore
-  import ViewInfo from './ViewInfo.vue';
-  // @ts-ignore
-  import AlarmRules from './AlarmRules.vue';
+  import ViewInfo from './../general_model/ViewInfo.vue';
 
   const props = defineProps({
     showModel: {
@@ -111,11 +104,10 @@
   });
   const showModelState = ref(false);
   const title = ref('产品物模型');
-  const action = ref('');
   const localParams: any = ref(null);
   // 回调
   const emit = defineEmits(['close', 'checked']);
-  watch([() => props.showModel, () => props.params], ([newShowModel, newParams]) => {
+  watch([() => props.showModel, () => props.params], async ([newShowModel, newParams]) => {
     showModelState.value = newShowModel;
     localParams.value = newParams || {};
     if (newParams && newParams.productId) {
@@ -126,15 +118,14 @@
   const actionRef = ref();
   const checkRow: any = ref(null);
   const keys = ref<string[]>([]);
-  const showCreateModal = ref(false);
+  const showCheckModal = ref(false);
   const showViewModal = ref(false);
-  const showRuleModal = ref(false);
-  const modelParams = ref<any>({});
+  const viewParams = ref<any>({});
 
   // 查询表单渲染
   const schemas: FormSchema[] = [
     {
-      field: 'modelClass',
+      field: 'type',
       component: 'NSelect',
       label: '模型类别',
       componentProps: {
@@ -191,7 +182,7 @@
   // 表格编辑列
   const actionCell = () => {
     return reactive({
-      width: 280,
+      width: 200,
       title: '操作',
       key: 'action',
       fixed: 'right',
@@ -202,14 +193,6 @@
             {
               label: '查看',
               onClick: handleView.bind(null, record),
-            },
-            {
-              label: '编辑',
-              onClick: handleEdit.bind(null, record),
-            },
-            {
-              label: '告警设置',
-              onClick: handleAlarmValue.bind(null, record),
             },
             {
               label: '删除',
@@ -227,14 +210,14 @@
    * 获取表格数据
    * @param res 响应数据
    */
-  const loadDataTable = async (_res: any) => {
+  const loadDataTable = async (res: any) => {
     if (localParams.value && localParams.value.productId) {
       const fieldsValue = getFieldsValue();
       let params = {} as ProductModelParams;
       params.productId = localParams.value.productId;
       if (fieldsValue && typeof fieldsValue === 'object') {
-        if (fieldsValue.hasOwnProperty('modelClass')) {
-          params.modelClass = fieldsValue.modelClass;
+        if (fieldsValue.hasOwnProperty('type')) {
+          params.type = fieldsValue.type;
         }
         if (fieldsValue.hasOwnProperty('identity')) {
           params.identity = fieldsValue.identity;
@@ -278,7 +261,7 @@
     const createTime = format(date, 'yyyy-MM-dd hh:mm:ss');
     const datas = JSON.parse(record.dataDefinition);
 
-    modelParams.value = {
+    viewParams.value = {
       modelIdentity: record.modelIdentity,
       modelName: record.modelName,
       groupName: '',
@@ -298,69 +281,11 @@
 
   // 新增
   const handleAdd = () => {
-    modelParams.value = {
-      modelId: '',
-      modelIdentity: '',
-      modelName: '',
-      productId: localParams.value.productId,
-      modelType: '0',
-      modelClass: 1,
-      dataType: 'int',
-      dataDefinition: '',
-      datas: {
-        min: null,
-        max: null,
-        unit: '',
-        step: null,
-      },
-      charts: 1,
-      monitor: 1,
-      history: 1,
-      readonly: 1,
-      share: 0,
-    };
-    action.value = 'add';
-    showCreateModal.value = true;
+    showCheckModal.value = true;
   };
-  // 编辑
-  const handleEdit = (record: Recordable) => {
-    const datas = JSON.parse(record.dataDefinition);
-    modelParams.value = {
-      modelId: record.modelId,
-      modelIdentity: record.modelIdentity,
-      modelName: record.modelName,
-      productId: record.productId,
-      modelType: record.modelType + '',
-      modelClass: record.modelClass,
-      dataType: record.dataType,
-      dataDefinition: record.dataDefinition,
-      datas,
-      charts: record.charts,
-      monitor: record.monitor,
-      history: record.history,
-      readonly: record.readonly,
-      share: record.share,
-    };
-    action.value = 'edit';
-    showCreateModal.value = true;
-  };
-  const saveModel = () => {
-    showCreateModal.value = false;
+  const checkKeysCall = () => {
+    showCheckModal.value = false;
     reloadTable();
-  };
-
-  // 告警阈值
-  const handleAlarmValue = (record: Recordable) => {
-    const datas = JSON.parse(record.dataDefinition);
-    modelParams.value = {
-      modelIdentity: record.modelIdentity,
-      modelName: record.modelName,
-      modelType: record.modelType,
-      productId: record.productId,
-      dataType: record.dataType,
-      datas: datas,
-    };
-    showRuleModal.value = true;
   };
 
   // 删除

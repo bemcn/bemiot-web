@@ -1,10 +1,5 @@
 <template>
-  <n-card :bordered="false" class="monitor-card" size="small">
-    <div class="monitor-info">
-      <div class="monitor-info">
-        <div class="label">任务分类汇总</div>
-      </div>
-    </div>
+  <n-card :bordered="false" title="任务执行总计" class="monitor-card" size="small">
     <div class="chart-container">
       <div ref="chartRef" class="chart"></div>
     </div>
@@ -13,7 +8,6 @@
 
 <script lang="ts" setup>
   import { ref, onMounted, onBeforeUnmount, nextTick } from 'vue';
-  import { getTaskClassStatistics } from '@/api/monitors/monitorsTask';
   import { init } from '@/utils/lib/echarts';
   // @ts-ignore
   import * as echarts from '@/utils/lib/echarts';
@@ -21,36 +15,6 @@
   const chartRef = ref<HTMLDivElement | null>(null);
   let chart: ReturnType<typeof init> | null = null;
 
-  // 获取图表数据
-  const initChartData = async () => {
-    const result = (await getTaskClassStatistics()) as unknown as {
-      status: string;
-      message: string;
-      data: any[];
-    };
-    if (result.status === 'success') {
-      return result.data;
-    } else {
-      return [
-        {
-          name: '数据推送',
-          value: 0,
-        },
-        {
-          name: '数据汇总',
-          value: 0,
-        },
-        {
-          name: '业务执行',
-          value: 0,
-        },
-        {
-          name: '数据清理',
-          value: 0,
-        },
-      ];
-    }
-  };
   // 初始化图表
   const initChart = () => {
     if (!chartRef.value) return;
@@ -62,9 +26,14 @@
   };
 
   // 更新图表
-  const updateChart = async () => {
+  const updateChart = () => {
     if (!chart) return;
-    const data = await initChartData();
+
+    // 随机生成数据
+    const success = Math.floor(Math.random() * 1000) + 100;
+    const fail = Math.floor(Math.random() * 500) + 50;
+    const exception = Math.floor(Math.random() * 300) + 30;
+
     const option = {
       tooltip: {
         trigger: 'item',
@@ -74,7 +43,7 @@
       },
       series: [
         {
-          name: '任务分类汇总',
+          name: '任务执行总计',
           type: 'pie',
           radius: ['40%', '70%'],
           avoidLabelOverlap: false,
@@ -97,7 +66,11 @@
           labelLine: {
             show: false,
           },
-          data: data,
+          data: [
+            { value: success, name: '成功' },
+            { value: fail, name: '失败' },
+            { value: exception, name: '异常' },
+          ],
         },
       ],
     };
@@ -111,7 +84,7 @@
     }
   };
 
-  // 数据更新
+  // 模拟数据更新
   let dataTimer: ReturnType<typeof setInterval> | null = null;
 
   onMounted(() => {
@@ -138,19 +111,9 @@
 
 <style lang="less" scoped>
   .monitor-card {
-    height: 425px;
-    .monitor-info {
-      height: 45px;
-      .label {
-        height: 35px;
-        line-height: 35px;
-        font-size: 16px;
-        float: left;
-      }
-    }
+    height: 300px;
     .chart-container {
-      height: 380px;
-      padding-bottom: 30px;
+      height: 100%;
       .chart {
         width: 100%;
         height: 100%;

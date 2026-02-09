@@ -9,10 +9,9 @@ export const columns: BasicColumn<Log>[] = [
   } as unknown as BasicColumn<Log>,
   {
     title: '时间',
-    key: 'ts',
-    width: 180,
+    key: 'createTime',
     render(record) {
-      const date = new Date(record.ts);
+      const date = new Date(record.createTime);
       return format(date, 'yyyy-MM-dd HH:mm:ss');
     },
   },
@@ -27,26 +26,21 @@ export const columns: BasicColumn<Log>[] = [
   {
     title: '来源',
     key: 'clientSource',
-    width: 150,
   },
   {
     title: 'IP地址',
     key: 'clientIp',
-    width: 150,
   },
   {
     title: '模块',
     key: 'modelName',
-    width: 120,
   },
   {
     title: '事件',
     key: 'operation',
-    width: 100,
   },
   {
     title: '描述',
     key: 'description',
-    width: 280,
   },
 ];

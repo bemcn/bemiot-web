@@ -1,7 +1,7 @@
 import { RouteRecordRaw } from 'vue-router';
 import { Layout } from '@/router/constant';
 import { FundOutlined } from '@vicons/antd';
-import { renderIcon } from '@/utils';
+import { renderIcon } from '@/utils/index';
 
 const routeName = 'monitors';
 
@@ -60,6 +60,15 @@ const routes: Array<RouteRecordRaw> = [
           permissions: ['message_monitor'],
         },
         component: () => import('@/views/monitors/message_monitor/index.vue'),
+      },
+      {
+        path: 'data_monitor',
+        name: `${routeName}_data_monitor`,
+        meta: {
+          title: '数据监控',
+          permissions: ['data_monitor'],
+        },
+        component: () => import('@/views/monitors/data_monitor/index.vue'),
       },
       {
         path: 'run_monitor',

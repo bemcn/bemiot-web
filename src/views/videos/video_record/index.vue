@@ -103,12 +103,17 @@
       </n-card>
     </div>
   </div>
-  <InfoFromModal
-    :showModel="showOptionModal"
-    :title="modelTitle"
-    :action="action"
+  <AddBatchModal
+    :showModel="showAddModal"
+    :deviceOption="treeOptions"
     :params="formParams"
-    @close="() => (showOptionModal = false)"
+    @close="() => (showAddModal = false)"
+    @submit="reloadOptionTable"
+  />
+  <EditFromModal
+    :showModel="showEditModal"
+    :params="formParams"
+    @close="() => (showEditModal = false)"
     @submit="reloadOptionTable"
   />
   <ViewVideoModal
@@ -137,7 +142,9 @@
   // @ts-ignore
   import { PlusOutlined, DeleteOutlined, ReloadOutlined, CaretRightFilled } from '@vicons/antd';
   // @ts-ignore
-  import InfoFromModal from './InfoFromModal.vue';
+  import AddBatchModal from './AddBatchModal.vue';
+  // @ts-ignore
+  import EditFromModal from './EditFromModal.vue';
   // @ts-ignore
   import ViewVideoModal from './ViewVideoModal.vue';
 
@@ -151,17 +158,15 @@
 
   //数据定义
   const queryRef: any = ref(null);
-  const deviceId = ref('');
-  const deviceName = ref('');
+  const deviceId = ref(0);
   const queryKey = ref('');
   const treeOptions = ref<any[]>([]);
   const deviceOptions = ref<any[]>([]);
   const checkRow: any = ref(null);
   const actionRef = ref();
-  const showOptionModal = ref(false);
+  const showAddModal = ref(false);
+  const showEditModal = ref(false);
   const showViewModal = ref(false);
-  const modelTitle = ref('新增视频通道');
-  const action = ref('add');
   const formParams = ref<any>({});
 
   // 查询组件
@@ -231,7 +236,7 @@
    */
   const createTreeData = async () => {
     const params = {
-      types: '3,4',
+      types: 3,
       lastType: 0,
     };
 
@@ -251,9 +256,9 @@
       onClick() {
         if (option.type === 'device') {
           const id = option.id + '';
-          if (deviceId.value !== id) {
-            deviceId.value = id;
-            deviceName.value = (option.label as string) || '';
+          const devId = parseInt(id);
+          if (deviceId.value !== devId) {
+            deviceId.value = devId;
             reloadTable();
           }
         }
@@ -290,7 +295,7 @@
   };
   const handleKeyClear = async () => {
     queryKey.value = '';
-    deviceId.value = '';
+    deviceId.value = 0;
     reloadTable();
   };
   const selectDevice = (item: any) => {
@@ -308,7 +313,7 @@
   const loadDataTable = async (res: any) => {
     const fieldsValue = getFieldsValue();
     let params = {} as DeviceChannelPageParams;
-    if (deviceId.value !== '') {
+    if (deviceId.value !== 0) {
       params.deviceId = deviceId.value;
     }
     if (fieldsValue.hasOwnProperty('key')) {
@@ -335,7 +340,7 @@
 
   const reloadOptionTable = async () => {
     queryKey.value = '';
-    deviceId.value = '';
+    deviceId.value = 0;
     actionRef.value.reload();
   };
 
@@ -344,8 +349,6 @@
     formParams.value = {
       channelId: record.channelId,
       channelName: record.channelName,
-      deviceId: record.device.deviceId,
-      smtpUrl: record.smtpUrl,
     };
     showViewModal.value = true;
   };
@@ -353,17 +356,16 @@
   // 新增
   const handleAdd = () => {
     formParams.value = {
-      channelId: '',
-      channelName: '',
-      deviceId: deviceId.value || null,
-      deviceName: deviceName.value,
+      deviceId: deviceId.value > 0 ? 'D-' + deviceId.value : null,
       channelType: null,
-      channel: '',
-      smtpUrl: '',
+      ipAddress: '',
+      port: '1935',
+      account: '',
+      password: '',
+      ptzType: '0',
+      count: '1',
     };
-    modelTitle.value = '新增视频通道';
-    action.value = 'add';
-    showOptionModal.value = true;
+    showAddModal.value = true;
   };
 
   // 编辑
@@ -374,12 +376,15 @@
       deviceId: record.deviceId,
       deviceName: record.device.deviceName,
       channelType: record.channelType + '',
-      channel: record.channel + '',
-      smtpUrl: record.smtpUrl,
+      ipAddress: record.ipAddress,
+      port: record.port + '',
+      account: record.account,
+      password: record.password,
+      ptzType: record.ptzType + '',
+      device: record.device,
+      server: record.server,
     };
-    modelTitle.value = '编辑视频通道';
-    action.value = 'edit';
-    showOptionModal.value = true;
+    showEditModal.value = true;
   };
 
   // 删除

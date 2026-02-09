@@ -28,7 +28,6 @@
         :row-key="(row) => row.deviceId"
         :row-props="rowProps"
         :striped="true"
-        :scroll-x="1860"
       />
     </n-card>
   </n-modal>
@@ -49,29 +48,22 @@
       default: () => true,
     },
     types: {
-      type: Array as PropType<number[]>,
-      default: () => [0],
+      type: Number,
+      default: () => 0,
     },
   });
 
   const queryRef: any = ref(null);
   const actionRef = ref();
   const showProductState = ref(false);
-  const productTypes = ref<number[]>([]);
+  const productTypes = ref(0);
   const spaceData = ref<any[]>([]);
 
   // 回调
   const emit = defineEmits(['close', 'checked']);
   watch([() => props.showModel, () => props.types], async ([newShowModel, newTypes]) => {
     showProductState.value = newShowModel;
-    if (newTypes && newTypes.length > 0) {
-      if (newTypes.length === 1 && newTypes[0] === 0) {
-        productTypes.value = [];
-      } else {
-        productTypes.value = newTypes;
-      }
-    }
-    console.log(newTypes);
+    productTypes.value = newTypes;
     if (newShowModel === true) {
       spaceData.value = await createPositionData();
     }
@@ -140,10 +132,8 @@
   const loadDataTable = async (res: any) => {
     const fieldsValue = getFieldsValue();
     let params = {} as DevicePageParams;
-    if (productTypes.value && productTypes.value.length > 0) {
-      //将数组转为字符串，用英文逗号隔开
-      const types = productTypes.value.join(',');
-      params.typeArray = types;
+    if (productTypes.value && productTypes.value > 0) {
+      params.types = productTypes.value;
     }
     if (fieldsValue.hasOwnProperty('spaceId')) {
       params.spaceId = fieldsValue.spaceId;

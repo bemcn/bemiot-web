@@ -64,6 +64,7 @@
   import { h, reactive, ref } from 'vue';
   import { BasicTable, TableAction } from '@/components/Table';
   import { BasicForm, FormSchema, useForm } from '@/components/Form/index';
+  import { PageCertificate } from '@/types/BaseModel';
   import {
     getCertificatePageList,
     delCertificateById,
@@ -176,7 +177,7 @@
     const result = (await getCertificatePageList(params)) as unknown as {
       status: string;
       message: string;
-      data: any;
+      data: PageCertificate;
     };
     if (result.status === 'success') {
       return result.data;

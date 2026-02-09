@@ -3,10 +3,10 @@ import { RequestBody } from 'alova';
 
 // 定义资产档案接口类型
 export interface DeviceAttrParams {
-  deviceId?: string;
+  deviceId?: number;
 }
 export interface DeviceAttrPageParams {
-  deviceId?: string;
+  deviceId?: number;
   index?: number;
   size?: number;
 }

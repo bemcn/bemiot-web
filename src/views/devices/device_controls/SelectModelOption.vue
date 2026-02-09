@@ -34,7 +34,7 @@
                     :class="selectDeviceId === item.deviceId ? 'selectRow' : ''"
                   >
                     <td>{{ item.deviceName }}</td>
-                    <td>{{ item.deviceId }}</td>
+                    <td>{{ item.deviceCode }}</td>
                     <td>{{ item.spaceRouteName }}</td>
                   </tr>
                 </tbody>
@@ -64,11 +64,11 @@
       </n-grid>
     </n-card>
   </n-modal>
-  <!-- <ViewInfo
+  <ViewInfo
     :showModel="showViewModal"
     :params="viewParams"
     @close="() => (showViewModal = false)"
-  /> -->
+  />
 </template>
 
 <script lang="ts" setup>
@@ -80,8 +80,8 @@
   import { getDeviceModelList, DeviceModelParams } from '@/api/devices/deviceModel';
   // @ts-ignore
   import { PlusOutlined, DeleteOutlined } from '@vicons/antd';
-  // // @ts-ignore
-  // import ViewInfo from './../general_model/ViewInfo.vue';
+  // @ts-ignore
+  import ViewInfo from './../general_model/ViewInfo.vue';
 
   const props = defineProps({
     showModel: {
@@ -113,7 +113,7 @@
   const deviceList = ref<any[]>([]);
   const deviceModelList = ref<any[]>([]);
   const selectSpaceId = ref(0);
-  const selectDeviceId = ref('');
+  const selectDeviceId = ref(0);
   const selectDevice = ref<any>({});
 
   /**
@@ -182,7 +182,7 @@
   const loadDeviceModelList = async () => {
     let params = {} as DeviceModelParams;
     params.deviceId = selectDeviceId.value;
-    params.modelClass = 2;
+    params.type = 2;
 
     const result = (await getDeviceModelList(params)) as unknown as {
       status: string;
@@ -215,6 +215,7 @@
       modelIdentity: item.modelIdentity,
       modelName: item.modelName,
       deviceId: item.deviceId,
+      deviceCode: item.deviceCode,
       deviceName: selectDevice.value.deviceName,
       position: selectDevice.value.spaceRouteName,
       dataType: dataType,

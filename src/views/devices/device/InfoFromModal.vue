@@ -10,7 +10,7 @@
   >
     <n-form
       :model="localParams"
-      :rules="localParams.types === 3 || localParams.types === 4 ? ruleVideo : rules"
+      :rules="rules"
       ref="formRef"
       label-placement="left"
       :label-width="120"
@@ -37,19 +37,19 @@
                 :disabled="action === 'edit'"
                 clearable
               />
-              <n-button :disabled="action === 'edit'" ghost @click="onSelectProduct">选择</n-button>
+              <n-button :disabled="action === 'edit'" ghost @click="selectProduct">选择</n-button>
             </n-input-group>
           </n-form-item>
-          <n-form-item :span="12" label="设备编号" path="deviceId">
+          <n-form-item :span="12" label="设备编号" path="deviceCode">
             <n-input-group>
               <n-input
                 maxlength="50"
                 placeholder="请输入设备编号"
-                v-model:value="localParams.deviceId"
+                v-model:value="localParams.deviceCode"
                 clearable
                 :disabled="action === 'edit'"
               />
-              <n-button :disabled="action === 'edit'" ghost @click="onCreateCode">生成</n-button>
+              <n-button :disabled="action === 'edit'" ghost @click="createCode">生成</n-button>
             </n-input-group>
           </n-form-item>
           <n-form-item label="所属分组" path="groupId">
@@ -135,13 +135,13 @@
         </n-form-item-gi>
         <n-form-item-gi
           :span="12"
-          label="定位地址"
+          label="设备地址"
           path="address"
           v-if="localParams.locateMethod === '0' || localParams.locateMethod === '3'"
         >
           <n-input
             maxlength="250"
-            placeholder="请输入定位地址"
+            placeholder="请输入设备地址"
             v-model:value="localParams.address"
             clearable
           />
@@ -160,22 +160,9 @@
         </n-form-item-gi>
         <n-form-item-gi
           :span="12"
-          label="IP地址"
-          path="ipAddress"
-          v-if="localParams.types < 3 && localParams.types > 4"
-        >
-          <n-input
-            maxlength="15"
-            placeholder="请输入设备IP地址"
-            v-model:value="localParams.ipAddress"
-            clearable
-          />
-        </n-form-item-gi>
-        <n-form-item-gi
-          :span="12"
           label="上级网关"
           path="gatewayName"
-          v-if="localParams.types === 5"
+          v-if="localParams.types === 4"
         >
           <n-input-group>
             <n-input
@@ -185,18 +172,17 @@
               readonly
               clearable
             />
-            <n-button ghost @click="onSelectGateway">选择</n-button>
+            <n-button ghost @click="selectGateway">选择</n-button>
           </n-input-group>
         </n-form-item-gi>
-        <n-form-item-gi
-          :span="12"
-          label="影子设备"
-          path="openShadow"
-          v-if="localParams.types < 3 && localParams.types > 4"
-        >
-          <n-space>
-            <n-switch v-model:value="localParams.openShadow" />
-          </n-space>
+        <n-form-item-gi :span="12" label="入网地址" path="ipAddress">
+          <n-input
+            maxlength="15"
+            placeholder="请输入设备IP地址"
+            v-model:value="localParams.ipAddress"
+            :allow-input="onlyAllowNumber"
+            clearable
+          />
         </n-form-item-gi>
         <n-form-item-gi
           :span="12"
@@ -212,82 +198,10 @@
             clearable
           />
         </n-form-item-gi>
-        <n-form-item-gi
-          :span="12"
-          label="视频协议"
-          path="monitoring.serverType"
-          v-if="localParams.types === 3 || localParams.types === 4"
-        >
-          <n-input
-            placeholder="待选择视频服务器"
-            v-model:value="localParams.monitoring.serverType"
-            disabled
-          />
-        </n-form-item-gi>
-        <n-form-item-gi
-          :span="12"
-          :label="videoLabel1"
-          path="monitoring.ipAddress"
-          v-if="localParams.types === 3 || localParams.types === 4"
-        >
-          <n-input
-            maxlength="15"
-            :placeholder="videoPlace1"
-            v-model:value="localParams.monitoring.ipAddress"
-            clearable
-          />
-        </n-form-item-gi>
-        <n-form-item-gi
-          :span="12"
-          :label="videoLabel2"
-          path="monitoring.port"
-          v-if="localParams.types === 3 || localParams.types === 4"
-        >
-          <n-input
-            maxlength="15"
-            :placeholder="videoPlace2"
-            v-model:value="localParams.monitoring.port"
-            :allow-input="onlyAllowInt"
-            clearable
-          />
-        </n-form-item-gi>
-        <n-form-item-gi
-          :span="12"
-          :label="videoLabel3"
-          path="monitoring.account"
-          v-if="localParams.types === 3 || localParams.types === 4"
-        >
-          <n-input
-            maxlength="50"
-            :placeholder="videoPlace3"
-            v-model:value="localParams.monitoring.account"
-            clearable
-          />
-        </n-form-item-gi>
-        <n-form-item-gi
-          :span="12"
-          :label="videoLabel4"
-          path="monitoring.password"
-          v-if="localParams.types === 3 || localParams.types === 4"
-        >
-          <n-input
-            maxlength="15"
-            :placeholder="videoPlace4"
-            v-model:value="localParams.monitoring.password"
-            clearable
-          />
-        </n-form-item-gi>
-        <n-form-item-gi
-          :span="12"
-          label="云台控制"
-          path="monitoring.ptzType"
-          v-if="localParams.types === 3 || localParams.types === 4"
-        >
-          <n-select
-            v-model:value="localParams.monitoring.ptzType"
-            :options="ptzTypes"
-            placeholder="请选择云台控制模式"
-          />
+        <n-form-item-gi :span="12" label="影子设备" path="openShadow">
+          <n-space>
+            <n-switch v-model:value="localParams.openShadow" />
+          </n-space>
         </n-form-item-gi>
         <n-form-item-gi :span="24" label="备注" path="remark">
           <n-input
@@ -322,7 +236,7 @@
   />
   <SelectDevice
     :showModel="showGatewayModal"
-    :types="[2]"
+    :types="2"
     @close="() => (showGatewayModal = false)"
     @checked="checkGateway"
   />
@@ -338,7 +252,7 @@
   import { UploadOutlined } from '@vicons/antd';
   import { uniqueId } from '@/utils/env';
   // @ts-ignore
-  import SelectProduct from '@/components/SelectProduct/SelectProduct.vue';
+  import SelectProduct from './SelectProduct.vue';
   // @ts-ignore
   import VideoParams from './VideoParams.vue';
   // @ts-ignore
@@ -398,40 +312,6 @@
       value: '3',
     },
   ];
-  let ptzTypes = [
-    {
-      label: '无',
-      value: '0',
-    },
-    {
-      label: 'ONVIF',
-      value: '1',
-    },
-    {
-      label: 'Pelco-D',
-      value: '2',
-    },
-    {
-      label: 'Pelco-P',
-      value: '3',
-    },
-    {
-      label: 'VISCA',
-      value: '4',
-    },
-    {
-      label: '其他',
-      value: '6',
-    },
-  ];
-  const videoLabel1 = ref('IP地址');
-  const videoLabel2 = ref('端口');
-  const videoLabel3 = ref('管理账号');
-  const videoLabel4 = ref('管理密码');
-  const videoPlace1 = ref('请输入设备IP地址');
-  const videoPlace2 = ref('请输入设备协议端口');
-  const videoPlace3 = ref('请输入设备管理账号');
-  const videoPlace4 = ref('请输入设备管理密码');
   const showProductModal = ref(false);
   const showVideoModal = ref(false);
   const showGatewayModal = ref(false);
@@ -461,7 +341,6 @@
 
   // 表单验证
   const onlyAllowNumber = (value: string) => !value || /^[\d.]+$/.test(value);
-  const onlyAllowInt = (value: string) => !value || /^\d+$/.test(value);
   const inputValidationVersion = (_rule: FormItemRule, value: string) => {
     if (value !== '') {
       const regex = /^(\d+\.\d+(\.\d+)*?)$/;
@@ -488,7 +367,7 @@
       trigger: ['blur', 'input'],
       message: '请选择所属产品',
     },
-    deviceId: {
+    deviceCode: {
       required: true,
       trigger: ['blur', 'input'],
       message: '请输入设备编号',
@@ -503,71 +382,10 @@
       trigger: ['blur', 'input'],
       message: '固件版本格式错误',
     },
-    ipAddress: [
-      {
-        required: true,
-        trigger: ['blur', 'input'],
-        message: '请输入设备IP地址',
-      },
-      {
-        validator: inputValidationIp,
-        trigger: ['blur', 'input'],
-        message: '设备IP地址格式错误',
-      },
-    ],
-  };
-  const ruleVideo: FormRules = {
-    deviceName: {
-      required: true,
+    ipAddress: {
+      validator: inputValidationIp,
       trigger: ['blur', 'input'],
-      message: '请输入设备名称',
-    },
-    productName: {
-      required: true,
-      trigger: ['blur', 'input'],
-      message: '请选择所属产品',
-    },
-    deviceId: {
-      required: true,
-      trigger: ['blur', 'input'],
-      message: '请输入设备编号',
-    },
-    spaceId: {
-      required: true,
-      trigger: ['blur', 'change'],
-      message: '请选择安装位置',
-    },
-    firmwareVersion: {
-      validator: inputValidationVersion,
-      trigger: ['blur', 'input'],
-      message: '固件版本格式错误',
-    },
-    'monitoring.ipAddress': [
-      {
-        required: true,
-        trigger: ['blur', 'input'],
-        message: '请输入IP地址',
-      },
-      {
-        validator: inputValidationIp,
-        trigger: ['blur', 'input'],
-        message: 'IP地址格式错误',
-      },
-    ],
-    'monitoring.port': {
-      required: true,
-      trigger: ['blur', 'input'],
-      message: '请输入设备相关端口号',
-    },
-    'monitoring.account': {
-      required: true,
-      trigger: ['blur', 'input'],
-      message: '请输入设备相关账号',
-    },
-    'monitoring.password': {
-      required: true,
-      trigger: ['blur', 'input'],
-      message: '请输入设备相关密码',
+      message: '入网IP地址格式错误',
     },
   };
 
@@ -605,7 +423,7 @@
   };
 
   // 选择产品
-  const onSelectProduct = () => {
+  const selectProduct = () => {
     showProductModal.value = true;
   };
   const checkProduct = (dataRow: any) => {
@@ -630,7 +448,7 @@
         localParams.value.serverKey = '';
         localParams.value.videoDomain = '';
         localParams.value.mainChannel = 0;
-        localParams.value.deviceId = '';
+        localParams.value.deviceCode = '';
       }
     } catch (error) {
       console.error('Error in checkProduct:', error);
@@ -638,81 +456,24 @@
     }
   };
   // 生成设备编号
-  const onCreateCode = () => {
-    if (localParams.value.types === 3 || localParams.value.types === 4) {
+  const createCode = () => {
+    if (localParams.value.types === 3) {
       //打开视频参数窗口
       showVideoModal.value = true;
     } else {
-      const deviceId = 'D' + uniqueId();
-      localParams.value.deviceId = deviceId;
+      const devCode = 'D' + uniqueId();
+      localParams.value.deviceCode = devCode;
     }
   };
-  const createVideoCode = (dataRow: any) => {
+  const createVideoCode = (data: any) => {
     showVideoModal.value = false;
-    localParams.value.monitoring.serverId = dataRow.serverId;
-    localParams.value.monitoring.serverName = dataRow.serverName;
-    localParams.value.monitoring.serverType = dataRow.serverType;
-    localParams.value.mainChannel = dataRow.mainChannel;
-    localParams.value.deviceId = dataRow.code;
-
-    if (dataRow.serverType === 'sip') {
-      ptzTypes = [
-        {
-          label: '无',
-          value: '0',
-        },
-        {
-          label: 'SIP',
-          value: '5',
-        },
-      ];
-      videoLabel1.value = 'SIP IP';
-      videoLabel2.value = 'SIP端口';
-      videoLabel3.value = 'SIP账号';
-      videoLabel4.value = 'SIP密码';
-      videoPlace1.value = '请输入设备SIP IP地址';
-      videoPlace2.value = '请输入设备SIP端口';
-      videoPlace3.value = '请输入设备SIP账号';
-      videoPlace4.value = '请输入设备SIP密码';
-    } else {
-      ptzTypes = [
-        {
-          label: '无',
-          value: '0',
-        },
-        {
-          label: 'ONVIF',
-          value: '1',
-        },
-        {
-          label: 'Pelco-D',
-          value: '2',
-        },
-        {
-          label: 'Pelco-P',
-          value: '3',
-        },
-        {
-          label: 'VISCA',
-          value: '4',
-        },
-        {
-          label: '其他',
-          value: '6',
-        },
-      ];
-      videoLabel1.value = 'IP地址';
-      videoLabel2.value = '端口';
-      videoLabel3.value = '管理账号';
-      videoLabel4.value = '管理密码';
-      videoPlace1.value = '请输入设备IP地址';
-      videoPlace2.value = '请输入设备云台协议端口';
-      videoPlace3.value = '请输入设备管理账号';
-      videoPlace4.value = '请输入设备管理密码';
-    }
+    localParams.value.serverKey = data.serverKey;
+    localParams.value.videoDomain = data.videoDomain;
+    localParams.value.mainChannel = data.mainChannel;
+    localParams.value.deviceCode = data.code;
   };
   // 选择网关
-  const onSelectGateway = () => {
+  const selectGateway = () => {
     showGatewayModal.value = true;
   };
   const checkGateway = (dataRow: any) => {
@@ -726,59 +487,29 @@
     formBtnLoading.value = true;
     formRef.value.validate(async (errors: any) => {
       if (!errors) {
-        const action = props.action;
-        const types = localParams.value.types;
-
-        let ipAddress: string;
-        let paramsData: string;
-        if (types === 3 || types === 4) {
-          ipAddress = localParams.value.monitoring.ipAddress;
-          paramsData = JSON.stringify(localParams.value.monitoring);
-        } else {
-          ipAddress = localParams.value.ipAddress;
-          paramsData = JSON.stringify(localParams.value.paramsArray);
-        }
-
-        let params: any;
-        if (action === 'add') {
-          params = {
-            deviceId: localParams.value.deviceId,
-            deviceName: localParams.value.deviceName,
-            productId: localParams.value.productId,
-            types,
-            groupId: localParams.value.groupId ? parseInt(localParams.value.groupId) : 0,
-            spaceId: parseInt(localParams.value.spaceId),
-            gatewayId: localParams.value.gatewayId,
-            locateMethod: parseInt(localParams.value.locateMethod),
-            openShadow: localParams.value.openShadow ? 1 : 0,
-            address: localParams.value.address,
-            ipAddress,
-            longitude: Number(localParams.value.longitude),
-            latitude: Number(localParams.value.latitude),
-            installImg: localParams.value.installImg === null ? '' : localParams.value.installImg,
-            firmwareVersion: localParams.value.firmwareVersion,
-            remark: localParams.value.remark,
-            paramsData,
-          };
-        } else {
-          params = {
-            deviceId: localParams.value.deviceId,
-            deviceName: localParams.value.deviceName,
-            groupId: localParams.value.groupId ? parseInt(localParams.value.groupId) : 0,
-            spaceId: parseInt(localParams.value.spaceId),
-            gatewayId: localParams.value.gatewayId,
-            locateMethod: parseInt(localParams.value.locateMethod),
-            openShadow: localParams.value.openShadow ? 1 : 0,
-            address: localParams.value.address,
-            ipAddress,
-            longitude: Number(localParams.value.longitude),
-            latitude: Number(localParams.value.latitude),
-            installImg: localParams.value.installImg === null ? '' : localParams.value.installImg,
-            firmwareVersion: localParams.value.firmwareVersion,
-            remark: localParams.value.remark,
-            paramsData,
-          };
-        }
+        const params = {
+          deviceId: localParams.value.deviceId,
+          deviceCode: localParams.value.deviceCode,
+          deviceName: localParams.value.deviceName,
+          productId: localParams.value.productId,
+          groupId: localParams.value.groupId ? parseInt(localParams.value.groupId) : 0,
+          userId: 0,
+          spaceId: parseInt(localParams.value.spaceId),
+          gatewayId: localParams.value.gatewayId,
+          locateMethod: parseInt(localParams.value.locateMethod),
+          openShadow: localParams.value.openShadow ? 1 : 0,
+          address: localParams.value.address,
+          ipAddress: localParams.value.ipAddress,
+          longitude: Number(localParams.value.longitude),
+          latitude: Number(localParams.value.latitude),
+          installImg: localParams.value.installImg === null ? '' : localParams.value.installImg,
+          firmwareVersion: localParams.value.firmwareVersion,
+          remark: localParams.value.remark,
+          serverKey: localParams.value.serverKey,
+          videoDomain: localParams.value.videoDomain,
+          mainChannel: localParams.value.mainChannel,
+          paramsData: JSON.stringify(localParams.value.paramsArray),
+        };
 
         let result: { status: any; message: any };
         if (props.action === 'add') {

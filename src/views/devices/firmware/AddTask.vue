@@ -49,12 +49,10 @@
               <tbody>
                 <tr v-for="(item, index) in taskParams.deviceArray" :key="index">
                   <td>{{ item.deviceId }}</td>
-                  <td>{{ item.deviceId }}</td>
+                  <td>{{ item.deviceCode }}</td>
                   <td>{{ item.deviceName }}</td>
                   <td>
-                    <n-button quaternary type="info" @click="deleteDevice(Number(index))"
-                      >删除</n-button
-                    >
+                    <n-button quaternary type="info" @click="deleteDevice(index)">删除</n-button>
                   </td>
                 </tr>
               </tbody>

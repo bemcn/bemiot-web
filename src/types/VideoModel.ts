@@ -1,7 +1,7 @@
 export interface DeviceChannel {
   channelId: string;
-  deviceId: string;
-  productId: string;
+  deviceId: number;
+  productId: number;
   channelName: string;
   serverKey: string;
   videoCode: string;

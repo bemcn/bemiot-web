@@ -26,12 +26,9 @@
   </div>
 </template>
 <script lang="ts" setup>
-  import { reactive } from 'vue';
-  // @ts-ignore
+  import { reactive, toRefs } from 'vue';
   import BasicSetting from './BasicSetting.vue';
-  // @ts-ignore
   import ParamSetting from './ParamSetting.vue';
-  // @ts-ignore
   import SafeSetting from './SafeSetting.vue';
 
   const typeTabList = [
@@ -77,7 +74,7 @@
     background: #f0faff;
     color: #2d8cf0;
 
-    :deep(.n-thing-main .n-thing-header .n-thing-header__title) {
+    ::v-deep(.n-thing-main .n-thing-header .n-thing-header__title) {
       color: #2d8cf0;
     }
 
@@ -86,11 +83,11 @@
     }
   }
 
-  :deep(.thing-cell .n-thing-main__description) {
+  ::v-deep(.thing-cell .n-thing-main__description) {
     color: #999999;
     font-size: 12px;
   }
-  :deep(.thing-cell-on .n-thing-main__description) {
+  ::v-deep(.thing-cell-on .n-thing-main__description) {
     color: #69c0ff !important;
     font-size: 12px;
   }

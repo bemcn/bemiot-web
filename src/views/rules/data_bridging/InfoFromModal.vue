@@ -517,14 +517,14 @@
 </script>
 
 <style lang="less" scoped>
-  :deep(.n-base-icon) {
+  /deep/ .n-base-icon {
     color: #2374c6;
   }
-  :deep(
+  /deep/
     .n-collapse
     .n-collapse-item:not(.n-collapse-item--disabled).n-collapse-item--trigger-area-main
     .n-collapse-item__header
-    .n-collapse-item__header-main) {
+    .n-collapse-item__header-main {
     font-size: 15px;
     font-weight: 600;
     padding-left: 20px;

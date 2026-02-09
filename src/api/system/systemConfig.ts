@@ -2,7 +2,7 @@ import { Alova } from '@/utils/http/alova/index';
 import { RequestBody } from 'alova';
 
 /**
- * @description: 获取信息列表
+ * @description: 获取字典信息列表
  */
 export function getConfigParams(params: { group: string }): Object {
   return Alova.Get<InResult>('/conf/getConfigParams', {

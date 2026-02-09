@@ -111,9 +111,8 @@
       1: '直连设备',
       2: '网关设备',
       3: '监控设备',
-      4: '视频存储设备',
-      5: '网关子设备',
-      6: '虚拟设备',
+      4: '网关子设备',
+      5: '虚拟设备',
     };
     return typeMap[type] || '未知类型';
   };
@@ -170,7 +169,7 @@
           content: `
             <div style="padding: 10px;">
               <h3>${device.deviceName}</h3>
-              <p><strong>设备编码:</strong> ${device.deviceId}</p>
+              <p><strong>设备编码:</strong> ${device.deviceCode}</p>
               <p><strong>设备类型:</strong> ${getDeviceTypeName(device.types)}</p>
               <p><strong>状态:</strong> ${device.status === 0 ? '在线' : '离线'}</p>
               <p><strong>安装位置:</strong> ${device.spaceRouteName || '未指定'}</p>

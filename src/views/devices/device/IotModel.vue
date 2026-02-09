@@ -28,7 +28,29 @@
         :actionColumn="actionColumn"
         :striped="true"
         :pagination="false"
-      />
+        @update:checked-row-keys="onCheckedRow"
+      >
+        <template #tableTitle>
+          <n-button type="primary" @click="handleAdd">
+            <template #icon>
+              <n-icon>
+                <PlusOutlined />
+              </n-icon>
+            </template>
+            添加通用物模型
+          </n-button>
+          <n-button style="margin-left: 10px" type="primary" @click="handleDelArray">
+            <template #icon>
+              <n-icon>
+                <DeleteOutlined />
+              </n-icon>
+            </template>
+            批量删除
+          </n-button>
+        </template>
+
+        <template #toolbar> </template>
+      </BasicTable>
     </n-card>
     <template #action>
       <n-space>
@@ -36,17 +58,39 @@
       </n-space>
     </template>
   </n-modal>
+  <SelectModel
+    :showModel="showCheckModal"
+    :keys="keys"
+    :id="localParams?.deviceId || 0"
+    @close="() => (showCheckModal = false)"
+    @submit="checkKeysCall"
+  />
+  <ViewInfo
+    :showModel="showViewModal"
+    :params="viewParams"
+    @close="() => (showViewModal = false)"
+  />
 </template>
 
 <script lang="ts" setup>
   import { h, reactive, ref, watch } from 'vue';
   import { BasicTable, TableAction } from '@/components/Table';
   import { BasicForm, FormSchema, useForm } from '@/components/Form/index';
-  import { getDeviceModelList, DeviceModelParams } from '@/api/devices/deviceModel';
+  import { DeviceModel } from '@/types/DeviceModel';
+  import {
+    getDeviceModelList,
+    delDeviceModelById,
+    delDeviceModelByIds,
+    DeviceModelParams,
+  } from '@/api/devices/deviceModel';
   import { devModelColumns } from './columns';
   import { format } from 'date-fns';
   // @ts-ignore
   import { PlusOutlined, DeleteOutlined } from '@vicons/antd';
+  // @ts-ignore
+  import SelectModel from './SelectModel.vue';
+  // @ts-ignore
+  import ViewInfo from './../general_model/ViewInfo.vue';
 
   const props = defineProps({
     showModel: {
@@ -67,11 +111,12 @@
     showModelState.value = newShowModel;
     localParams.value = newParams || {};
     if (newParams && newParams.deviceId) {
-      title.value = '设备物模型 - ' + newParams.deviceName + ' 【' + newParams.deviceId + '】';
+      title.value = '设备物模型 - ' + newParams.deviceName + ' 【' + newParams.deviceCode + '】';
     }
   });
 
   const actionRef = ref();
+  const checkRow: any = ref(null);
   const keys = ref<string[]>([]);
   const showCheckModal = ref(false);
   const showViewModal = ref(false);
@@ -149,6 +194,10 @@
               label: '查看',
               onClick: handleView.bind(null, record),
             },
+            {
+              label: '删除',
+              onClick: handleDel.bind(null, record),
+            },
           ],
         });
       },
@@ -168,7 +217,7 @@
       params.deviceId = localParams.value.deviceId;
       if (fieldsValue && typeof fieldsValue === 'object') {
         if (fieldsValue.hasOwnProperty('type')) {
-          params.modelClass = fieldsValue.type;
+          params.type = fieldsValue.type;
         }
         if (fieldsValue.hasOwnProperty('identity')) {
           params.identity = fieldsValue.identity;
@@ -229,6 +278,62 @@
       isGeneral: false,
     };
     showViewModal.value = true;
+  };
+
+  // 新增
+  const handleAdd = () => {
+    showCheckModal.value = true;
+  };
+  const checkKeysCall = () => {
+    showCheckModal.value = false;
+    reloadTable();
+  };
+
+  // 删除
+  const handleDel = async (record: Recordable) => {
+    const params = {
+      id: record.modelId,
+    };
+
+    try {
+      const result = (await delDeviceModelById(params)) as unknown as {
+        status: string;
+        message: string;
+      };
+
+      if (result.status === 'success') {
+        window['$message'].success('删除成功');
+        reloadTable();
+      } else {
+        window['$message'].error(result.message);
+      }
+    } catch (error) {
+      window['$message'].error('删除失败');
+    }
+  };
+
+  // 批量选择
+  const onCheckedRow = (rowKeys: any) => {
+    checkRow.value = rowKeys;
+  };
+
+  // 批量删除
+  const handleDelArray = async () => {
+    const ids = checkRow.value.join(',');
+    const params = {
+      ids,
+    };
+
+    const result = (await delDeviceModelByIds(params)) as unknown as {
+      status: string;
+      message: string;
+    };
+    if (result.status === 'success') {
+      window['$message'].success('删除成功');
+      reloadTable();
+    } else {
+      window['$message'].error(result.message);
+    }
   };
 
   // 查询点击

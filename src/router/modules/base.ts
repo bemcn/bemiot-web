@@ -36,6 +36,33 @@ const routes: Array<RouteRecordRaw> = [
         component: () => import('@/views/base/space/index.vue'),
       },
       {
+        path: 'product_class',
+        name: `${routeName}_product_class`,
+        meta: {
+          title: '产品分类',
+          permissions: ['product_class'],
+        },
+        component: () => import('@/views/base/product_class/index.vue'),
+      },
+      {
+        path: 'device_group',
+        name: `${routeName}_device_group`,
+        meta: {
+          title: '设备分组',
+          permissions: ['device_group'],
+        },
+        component: () => import('@/views/base/device_group/index.vue'),
+      },
+      {
+        path: 'general_model_group',
+        name: `${routeName}_general_model_group`,
+        meta: {
+          title: '物模型分组',
+          permissions: ['general_model_group'],
+        },
+        component: () => import('@/views/base/general_model_group/index.vue'),
+      },
+      {
         path: 'protocols',
         name: `${routeName}_protocols`,
         meta: {
@@ -61,24 +88,6 @@ const routes: Array<RouteRecordRaw> = [
           permissions: ['certificate'],
         },
         component: () => import('@/views/base/certificate/index.vue'),
-      },
-      {
-        path: 'ext_interface',
-        name: `${routeName}_ext_interface`,
-        meta: {
-          title: '外部接口',
-          permissions: ['ext_interface'],
-        },
-        component: () => import('@/views/base/ext_interface/index.vue'),
-      },
-      {
-        path: 'msg_templates',
-        name: `${routeName}_msg_templates`,
-        meta: {
-          title: '消息模板',
-          permissions: ['msg_templates'],
-        },
-        component: () => import('@/views/base/msg_templates/index.vue'),
       },
     ],
   },

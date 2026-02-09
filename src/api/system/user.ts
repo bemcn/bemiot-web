@@ -50,13 +50,6 @@ export function getUserListByIds(params: { ids: string }) {
 }
 
 /**
- * @description: 获取所有用户名数组
- */
-export function getUserNameArray() {
-  return Alova.Get<InResult>('/user/getUserNameArray');
-}
-
-/**
  * @description: 根据ID获取用户信息
  */
 export function getUserInfo(params: { id: number }) {

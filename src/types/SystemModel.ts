@@ -16,6 +16,30 @@ export interface PageNotice {
   size: number;
 }
 
+export interface Platform {
+  platformId: string;
+  platformName: string;
+  appKey: string;
+  secretKey: string;
+  accessType: number;
+  authJumpUrl: string;
+  bindRegUrl: string;
+  loginJumpUrl: string;
+  errorUrl: string;
+  remark: string;
+  isSystem: number;
+  iconImg: string;
+  status: number;
+}
+
+export interface PagePlatform {
+  records: Platform[];
+  total: number;
+  current: number;
+  pages: number;
+  size: number;
+}
+
 export interface Role {
   roleId: number;
   roleName: string;
@@ -79,8 +103,7 @@ export interface PageBlacklist {
 }
 
 export interface Log {
-  ts: number;
-  logId: string;
+  id: string;
   clientSource: string;
   clientIp: string;
   userId: number;
@@ -89,6 +112,7 @@ export interface Log {
   modelName: string;
   operation: string;
   description: string;
+  createTime: string;
 }
 
 export interface PageLog {

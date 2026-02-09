@@ -118,8 +118,6 @@
                               : item.types === 3
                               ? '监控设备'
                               : item.types === 4
-                              ? '视频存储设备'
-                              : item.types === 5
                               ? '网关子设备'
                               : '虚拟设备'
                           }}</n-tag
@@ -280,7 +278,7 @@
     delProductById,
     ProductPageParams,
   } from '@/api/devices/product';
-  import { getProductClassTree } from '@/api/devices/productClass';
+  import { getProductClassTree } from '@/api/base/productClass';
   import { columns } from './columns';
   import { useUserStore } from '@/store/modules/user';
   import { useGlobSetting } from '@/hooks/setting';
@@ -369,14 +367,10 @@
           },
           {
             value: 4,
-            label: '视频存储设备',
-          },
-          {
-            value: 5,
             label: '网关子设备',
           },
           {
-            value: 6,
+            value: 5,
             label: '虚拟设备',
           },
         ],
@@ -718,7 +712,7 @@
       },
     ];
     formParams.value = {
-      productId: '',
+      productId: 0,
       productName: '',
       classId: classId.value > 0 ? classId.value + '' : null,
       models: '',
@@ -820,10 +814,8 @@
     reloadTable();
   };
 
-  onMounted(() => {
-    createTreeData().then((treeData) => {
-      data.value = treeData;
-    });
+  onMounted(async () => {
+    data.value = await createTreeData();
   });
 </script>
 <style lang="less" scoped>

@@ -565,7 +565,7 @@
   );
 
   // 群控方法切换
-  const handleMethod = (_value: string) => {
+  const handleMethod = (value: string) => {
     // if (value === '2') {
     //   localParams.value.silentPeriod = '0';
     //   localParams.value.timeConditionsObj = {};
@@ -600,7 +600,8 @@
       modelId: 0,
       modelIdentity: '',
       modelName: '',
-      deviceId: '',
+      deviceId: 0,
+      deviceCode: '',
       deviceName: '',
       position: '',
       dataType: 'int',
@@ -628,6 +629,7 @@
     localParams.value.elDataObj.conditions[i].modelIdentity = data.modelIdentity;
     localParams.value.elDataObj.conditions[i].modelName = data.modelName;
     localParams.value.elDataObj.conditions[i].deviceId = data.deviceId;
+    localParams.value.elDataObj.conditions[i].deviceCode = data.deviceCode;
     localParams.value.elDataObj.conditions[i].deviceName = data.deviceName;
     localParams.value.elDataObj.conditions[i].position = data.position;
     localParams.value.elDataObj.conditions[i].dataType = data.dataType;
@@ -640,7 +642,8 @@
       modelId: 0,
       modelIdentity: '',
       modelName: '',
-      deviceId: '',
+      deviceId: 0,
+      deviceCode: '',
       deviceName: '',
       position: '',
       dataType: 'int',
@@ -669,6 +672,7 @@
     localParams.value.elDataObj.options[i].modelIdentity = data.modelIdentity;
     localParams.value.elDataObj.options[i].modelName = data.modelName;
     localParams.value.elDataObj.options[i].deviceId = data.deviceId;
+    localParams.value.elDataObj.options[i].deviceCode = data.deviceCode;
     localParams.value.elDataObj.options[i].deviceName = data.deviceName;
     localParams.value.elDataObj.options[i].position = data.position;
     localParams.value.elDataObj.options[i].dataType = data.dataType;
@@ -723,7 +727,7 @@
   };
 </script>
 <style lang="less" scoped>
-  .func-box :deep(.n-form-item .n-form-item-feedback-wrapper) {
+  .func-box /deep/ .n-form-item .n-form-item-feedback-wrapper {
     display: none;
   }
   .frm-rule {

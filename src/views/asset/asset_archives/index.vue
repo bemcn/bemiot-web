@@ -79,7 +79,7 @@
 
   //数据定义
   const queryRef: any = ref(null);
-  const chkTreeId = ref('');
+  const chkTreeId = ref(0);
   const chkTreeType = ref('');
   const actionRef = ref();
   const showModal = ref(false);
@@ -181,23 +181,23 @@
   const nodeProps = ({ option }: { option: TreeOption }) => {
     return {
       onClick() {
-        if (option.key === '') {
-          if (chkTreeId.value !== '') {
-            chkTreeId.value = '';
+        if (option.key === '0') {
+          if (chkTreeId.value !== 0) {
+            chkTreeId.value = 0;
             chkTreeType.value = '';
             reloadTable();
           }
         } else {
-          const changeId = option.key ? option.key.toString() : '';
+          const changeId = option.key ? parseInt(option.key.toString(), 10) : 0;
           const changeType = option.type ? option.type.toString() : '';
-          if (changeId !== '') {
+          if (changeId > 0) {
             if (changeId !== chkTreeId.value || changeType !== chkTreeType.value) {
               chkTreeId.value = changeId;
               chkTreeType.value = changeType;
               reloadTable();
             }
           } else {
-            chkTreeId.value = '';
+            chkTreeId.value = 0;
             chkTreeType.value = '';
             reloadTable();
           }
@@ -213,9 +213,9 @@
   const loadDataTable = async (res: any) => {
     const fieldsValue = getFieldsValue();
     let params = {} as DevicePageParams;
-    if (chkTreeId.value !== '') {
+    if (chkTreeId.value !== 0) {
       if (chkTreeType.value === 'class') {
-        params.classId = parseInt(chkTreeId.value);
+        params.classId = chkTreeId.value;
       } else {
         params.productId = chkTreeId.value;
       }
@@ -265,6 +265,7 @@
 
     formParams.value = {
       deviceId: record.deviceId,
+      deviceCode: record.deviceCode,
       deviceName: record.deviceName,
       productName: record.product.productName,
       types: record.product.types,

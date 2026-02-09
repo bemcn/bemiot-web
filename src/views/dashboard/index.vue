@@ -1,7 +1,7 @@
 <template>
   <div class="console">
     <!--数据卡片-->
-    <DataTotal :loading="loadingIot" :iotStatistics="iotStatistics" />
+    <DataTotal :loading="loadingIot" />
 
     <!--消息统计|公告-->
     <div class="mt-4">

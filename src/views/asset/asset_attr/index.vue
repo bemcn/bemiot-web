@@ -106,7 +106,7 @@
   //数据定义
   const queryRef: any = ref(null);
   const checkRow: any = ref(null);
-  const chkTreeId = ref('');
+  const chkTreeId = ref(0);
   const chkTreeType = ref('');
   const chkTreeLabel = ref('');
   const actionRef = ref();
@@ -198,17 +198,17 @@
   const nodeProps = ({ option }: { option: TreeOption }) => {
     return {
       onClick() {
-        if (option.key === '') {
-          if (chkTreeId.value !== '') {
-            chkTreeId.value = '';
+        if (option.key === '0') {
+          if (chkTreeId.value !== 0) {
+            chkTreeId.value = 0;
             chkTreeType.value = '';
             chkTreeLabel.value = '';
             reloadTable();
           }
         } else {
-          const changeId = option.key ? option.key.toString() : '';
+          const changeId = option.key ? parseInt(option.key.toString(), 10) : 0;
           const changeType = option.type ? option.type.toString() : '';
-          if (changeId !== '') {
+          if (changeId > 0) {
             if (changeId !== chkTreeId.value || changeType !== chkTreeType.value) {
               chkTreeId.value = changeId;
               chkTreeType.value = changeType;
@@ -216,7 +216,7 @@
               reloadTable();
             }
           } else {
-            chkTreeId.value = '';
+            chkTreeId.value = 0;
             chkTreeType.value = '';
             chkTreeLabel.value = '';
             reloadTable();
@@ -233,9 +233,9 @@
   const loadDataTable = async (res: any) => {
     const fieldsValue = getFieldsValue();
     let params = {} as ProductAttrPageParams;
-    if (chkTreeId.value !== '') {
+    if (chkTreeId.value !== 0) {
       if (chkTreeType.value === 'class') {
-        params.classId = parseInt(chkTreeId.value);
+        params.classId = chkTreeId.value;
       } else {
         params.productId = chkTreeId.value;
       }
@@ -269,7 +269,7 @@
     let productId;
     let productName;
     if (chkTreeType.value === 'product') {
-      productId = chkTreeId.value;
+      productId = chkTreeId.value + '';
       productName = chkTreeLabel.value;
     } else {
       productId = null;
@@ -295,7 +295,7 @@
   const handleEdit = (record: Recordable) => {
     formParams.value = {
       attrId: record.attrId,
-      productId: record.productId,
+      productId: record.productId + '',
       productName: record.product.productName,
       classRoute: record.classRoute,
       fieldKey: record.fieldKey,

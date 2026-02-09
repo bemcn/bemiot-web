@@ -100,7 +100,7 @@
 
   //数据定义
   const queryRef: any = ref(null);
-  const deviceId = ref('');
+  const deviceId = ref(0);
   const queryKey = ref('');
   const treeOptions = ref<any[]>([]);
   const deviceOptions = ref<any[]>([]);
@@ -140,7 +140,7 @@
    */
   const createTreeData = async () => {
     const params = {
-      types: '3,4',
+      types: 3,
       lastType: 0,
     };
 
@@ -160,8 +160,9 @@
       onClick() {
         if (option.type === 'device') {
           const key = option.key + '';
-          if (deviceId.value !== key) {
-            deviceId.value = key;
+          const devId = parseInt(key);
+          if (deviceId.value !== devId) {
+            deviceId.value = devId;
             reloadTable();
           }
         }
@@ -198,7 +199,7 @@
   };
   const handleKeyClear = async () => {
     queryKey.value = '';
-    deviceId.value = '';
+    deviceId.value = 0;
     reloadTable();
   };
   const selectDevice = (item: any) => {
@@ -224,7 +225,7 @@
 
   const reloadOptionTable = async () => {
     queryKey.value = '';
-    deviceId.value = '';
+    deviceId.value = 0;
     actionRef.value.reload();
   };
 
@@ -240,7 +241,7 @@
   // 新增
   const handleAdd = () => {
     formParams.value = {
-      deviceId: deviceId.value || null,
+      deviceId: deviceId.value > 0 ? deviceId.value + '' : null,
       serverId: null,
       ipAddress: '',
       port: '1935',

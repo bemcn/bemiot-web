@@ -18,18 +18,6 @@
       style="padding-right: 30px !important"
     >
       <n-grid :cols="24" :x-gap="24">
-        <n-form-item-gi :span="12" label="产品编号" path="productId">
-          <n-input-group>
-            <n-input
-              maxlength="50"
-              placeholder="请输入产品编号"
-              v-model:value="localParams.productId"
-              clearable
-              :disabled="action === 'edit'"
-            />
-            <n-button :disabled="action === 'edit'" ghost @click="onCreateId">生成</n-button>
-          </n-input-group>
-        </n-form-item-gi>
         <n-form-item-gi :span="12" label="产品名称" path="productName">
           <n-input
             maxlength="50"
@@ -264,7 +252,6 @@
   import { useGlobSetting } from '@/hooks/setting';
   import { ACCESS_TOKEN } from '@/store/mutation-types';
   import { storage } from '@/utils/Storage';
-  import { uniqueId } from '@/utils/env';
   // @ts-ignore
   import { PlusOutlined, CloseCircleFilled, UploadOutlined } from '@vicons/antd';
   // @ts-ignore
@@ -317,16 +304,12 @@
       value: '3',
     },
     {
-      value: 4,
-      label: '视频存储设备',
-    },
-    {
-      value: 5,
       label: '网关子设备',
+      value: '4',
     },
     {
-      value: 6,
       label: '虚拟设备',
+      value: '5',
     },
   ];
   const netMethodOptions = [
@@ -375,29 +358,29 @@
   ];
   const transOptions = [
     {
-      label: 'Json解析协议',
+      label: 'Bem Json解析协议',
       value: 'bem-json',
     },
     {
-      label: 'TCP/UDP协议',
+      label: 'Bem TCP/UDP协议',
       value: 'bem-net',
     },
     {
-      label: 'Modbus RTU协议',
+      label: 'Bem Modbus RTU协议',
       value: 'bem-modbus-rtu',
     },
     {
-      label: 'Modbus TCP协议',
+      label: 'Bem Modbus TCP协议',
       value: 'bem-modbus-tcp',
     },
   ];
   const collectOptions = [
     {
-      label: '主动上传',
+      label: '设备主动上传',
       value: '0',
     },
     {
-      label: '被动采集',
+      label: '网关被动采集',
       value: '1',
     },
   ];
@@ -466,11 +449,6 @@
       message: '请选择设备驱动',
       trigger: ['blur', 'input'],
     },
-  };
-
-  // 生成产品编号
-  const onCreateId = () => {
-    localParams.value.productId = 'PD' + uniqueId();
   };
 
   //上传图片之前

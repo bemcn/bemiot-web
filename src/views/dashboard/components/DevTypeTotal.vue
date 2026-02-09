@@ -39,10 +39,6 @@
           name: '监控设备',
           value: 0,
         },
-        monitorStorage: {
-          name: '视频存储设备',
-          value: 0,
-        },
         subDevice: {
           name: '网关子设备',
           value: 0,
@@ -99,10 +95,6 @@
             { value: props.initData.connection.value, name: props.initData.connection.name },
             { value: props.initData.gateway.value, name: props.initData.gateway.name },
             { value: props.initData.monitor.value, name: props.initData.monitor.name },
-            {
-              value: props.initData.monitorStorage.value,
-              name: props.initData.monitorStorage.name,
-            },
             { value: props.initData.subDevice.value, name: props.initData.subDevice.name },
             { value: props.initData.virtual.value, name: props.initData.virtual.name },
           ],

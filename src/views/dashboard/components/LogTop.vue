@@ -23,7 +23,7 @@
               <n-table :bordered="false" :single-line="false" size="medium">
                 <tbody>
                   <tr v-for="(item, index) in initData" :key="index">
-                    <td class="item-time">{{ formatDate(item.ts) }}</td>
+                    <td class="item-time">{{ formatDate(item.createTime) }}</td>
                     <td class="item-item">{{ item.userName }}</td>
                     <td class="item-item">{{ item.clientIp }}</td>
                     <td class="item-item">{{ item.modelName }}</td>

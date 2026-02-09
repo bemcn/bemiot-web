@@ -2,7 +2,7 @@ import { Device, Product } from './DeviceModel';
 
 export interface ProductAttr {
   attrId: number;
-  productId: string;
+  productId: number;
   classRoute: string;
   fieldKey: string;
   fieldLabel: string;
@@ -21,7 +21,7 @@ export interface PageProductAttr {
 
 export interface DeviceAttr {
   devAttrId: string;
-  deviceId: string;
+  deviceId: number;
   classRoute: string;
   fieldKey: string;
   fieldLabel: string;

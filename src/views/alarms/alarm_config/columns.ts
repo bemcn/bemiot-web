@@ -2,139 +2,121 @@ import { BasicColumn } from '@/components/Table';
 import { format } from 'date-fns';
 import { h } from 'vue';
 import { NTag, NSwitch } from 'naive-ui';
-import { ModelAlarmRules } from '@/types/DeviceModel';
 
-export const columns: BasicColumn<ModelAlarmRules>[] = [
+// 告警设置数据接口
+export interface AlarmConfig {
+  id: number;
+  alarmName: string;
+  level: number; // 1: 紧急告警, 2: 重要告警, 3: 一般告警
+  levelText: string;
+  levelType: 'error' | 'warning' | 'info';
+  deviceProperty: string;
+  deviceName: string;
+  minValue?: number;
+  maxValue?: number;
+  responseMethods: string[]; // 响应方式: ['message', 'sms']
+  responseMethodText: string;
+  notifyUsers: string[]; // 通知人员
+  notifyUserText: string;
+  status: number; // 0: 禁用, 1: 启用
+  createTime: string;
+}
+
+export const columns: BasicColumn<AlarmConfig>[] = [
   {
     type: 'selection',
     key: 'selection',
-  } as unknown as BasicColumn<ModelAlarmRules>,
+  } as unknown as BasicColumn<AlarmConfig>,
   {
-    title: '规则名称',
-    key: 'rulesName',
+    title: 'ID',
+    key: 'id',
+    width: 80,
+  },
+  {
+    title: '告警名称',
+    key: 'alarmName',
     width: 150,
   },
   {
-    title: '产品名称',
-    key: 'product.productName',
-    width: 200,
-  },
-  {
-    title: '物模型标识',
-    key: 'modelIdentity',
-    width: 150,
-  },
-  {
-    title: '物模型',
-    key: 'model.modelName',
-    width: 150,
-  },
-  {
-    title: '物模型类别',
-    key: 'modelClass',
-    width: 100,
+    title: '告警级别',
+    key: 'level',
+    width: 120,
     render(record) {
-      let typeStr = '属性';
-      if (record.model.modelClass === 2) {
-        typeStr = '功能';
-      } else if (record.model.modelClass === 3) {
-        typeStr = '事件';
-      }
+      const levelMap = {
+        1: { text: '紧急告警', type: 'error' },
+        2: { text: '重要告警', type: 'warning' },
+        3: { text: '一般告警', type: 'info' },
+      };
+      
+      const levelInfo = levelMap[record.level as keyof typeof levelMap] || { text: '未知', type: 'default' };
+      
       return h(
         NTag,
         {
-          type:
-            record.model.modelClass === 1
-              ? 'info'
-              : record.model.modelClass === 2
-              ? 'success'
-              : 'warning',
+          type: levelInfo.type as any,
         },
         {
-          default: () => typeStr,
+          default: () => levelInfo.text,
         }
       );
     },
   },
   {
-    title: '告警规则',
-    key: 'alarmRules',
+    title: '设备属性',
+    key: 'deviceProperty',
+    width: 150,
+  },
+  {
+    title: '设备名称',
+    key: 'deviceName',
+    width: 150,
+  },
+  {
+    title: '告警值',
+    key: 'alarmValue',
+    width: 150,
     render(record) {
-      let rules = '';
-      if (record.alarmRules && record.alarmRules.length > 0) {
-        try {
-          const parsedRules = JSON.parse(record.alarmRules);
-          if (Array.isArray(parsedRules)) {
-            parsedRules.forEach(
-              (
-                item: { link: string; model: string; operator: string; value: string },
-                index: number
-              ) => {
-                if (index > 0) {
-                  if (item.link === 'and') {
-                    rules += ' <span style="color: #781481ff">与</span> ';
-                  } else {
-                    rules += ' <span style="color: #781481ff">或</span> ';
-                  }
-                }
-                rules +=
-                  '<span style="color: #2d8cf0">' +
-                  item.model +
-                  '</span> <span style="color: #a15f14ff">' +
-                  item.operator +
-                  '</span> ' +
-                  item.value;
-              }
-            );
-          }
-        } catch (error) {}
+      let text = '';
+      if (record.minValue !== undefined && record.maxValue !== undefined) {
+        text = `${record.minValue} ~ ${record.maxValue}`;
+      } else if (record.minValue !== undefined) {
+        text = `> ${record.minValue}`;
+      } else if (record.maxValue !== undefined) {
+        text = `< ${record.maxValue}`;
+      } else {
+        text = '无限制';
       }
-      return h('span', { innerHTML: rules });
+      return h('span', text);
     },
   },
   {
-    title: '告警等级',
-    key: 'alarmLevel',
+    title: '响应方式',
+    key: 'responseMethodText',
+    width: 150,
+  },
+  {
+    title: '通知人员',
+    key: 'notifyUserText',
+    width: 150,
+  },
+  {
+    title: '状态',
+    key: 'status',
     width: 100,
     render(record) {
-      let levelStr = '无';
-      if (record.alarmLevel === 1) {
-        levelStr = '一般告警';
-      } else if (record.alarmLevel === 2) {
-        levelStr = '重要告警';
-      } else if (record.alarmLevel === 3) {
-        levelStr = '紧急告警';
-      }
-      return h(
-        NTag,
-        {
-          type:
-            record.alarmLevel === 1
-              ? 'info'
-              : record.alarmLevel === 2
-              ? 'warning'
-              : record.alarmLevel === 3
-              ? 'error'
-              : 'success',
-        },
-        {
-          default: () => levelStr,
-        }
-      );
+      return h(NSwitch, {
+        value: record.status === 1,
+        disabled: true,
+      });
     },
   },
   {
-    title: '通知方式',
-    key: 'alertsType',
-    width: 100,
+    title: '创建日期',
+    key: 'createTime',
+    width: 180,
     render(record) {
-      let alertTypeStr = '所有用户';
-      if (record.alertsType === 1) {
-        alertTypeStr = '设备所有者';
-      } else if (record.alertsType === 2) {
-        alertTypeStr = '指定用户';
-      }
-      return h('span', alertTypeStr);
+      const date = new Date(record.createTime);
+      return format(date, 'yyyy-MM-dd HH:mm:ss');
     },
   },
 ];

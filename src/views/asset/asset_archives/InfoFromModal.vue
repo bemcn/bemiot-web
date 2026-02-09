@@ -24,7 +24,7 @@
           <n-input :value="localParams.productName" disabled />
         </n-form-item-gi>
         <n-form-item-gi :span="12" label="设备编号">
-          <n-input :value="localParams.deviceId" disabled />
+          <n-input :value="localParams.deviceCode" disabled />
         </n-form-item-gi>
         <n-form-item-gi :span="12" label="产品名称">
           <n-input :value="localParams.productName" disabled />
@@ -168,10 +168,8 @@
       case 3:
         return '监控设备';
       case 4:
-        return '视频存储设备';
-      case 5:
         return '网关子设备';
-      case 6:
+      case 5:
         return '虚拟设备';
       default:
         return '未知';

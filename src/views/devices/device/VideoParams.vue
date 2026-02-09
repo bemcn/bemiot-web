@@ -5,7 +5,7 @@
     :show-icon="false"
     preset="dialog"
     style="width: 640px"
-    title="生成设备编号"
+    title="生成设备编号和通道"
     @after-leave="closeModalAfter"
   >
     <n-form
@@ -16,16 +16,12 @@
       :label-width="120"
       class="py-4"
     >
-      <n-form-item label="视频服务器" path="serverName">
-        <n-input-group>
-          <n-input
-            maxlength="50"
-            placeholder="请选择视频服务器"
-            v-model:value="localParams.serverName"
-            readonly
-          />
-          <n-button ghost @click="onSelectServer">选择</n-button>
-        </n-input-group>
+      <n-form-item label="视频服务器" path="serverKey">
+        <n-select
+          v-model:value="localParams.serverKey"
+          :options="serverOptions"
+          placeholder="请选择视频服务器"
+        />
       </n-form-item>
       <n-form-item label="设备类型" path="deviceType">
         <n-select
@@ -42,21 +38,14 @@
       </n-space>
     </template>
   </n-modal>
-
-  <SelectServer
-    :showModel="showServerModal"
-    @close="() => (showServerModal = false)"
-    @checked="checkServer"
-  />
 </template>
 
 <script lang="ts" setup>
   import { ref, watch } from 'vue';
   import { FormRules } from 'naive-ui';
   import { useMainChannel } from '@/api/devices/device';
+  import { getVideoServerList, VideoServerParams } from '@/api/video/videoServer';
   import { uniqueId } from '@/utils/env';
-  // @ts-ignore
-  import SelectServer from './SelectServer.vue';
 
   const props = defineProps({
     showModel: {
@@ -70,16 +59,17 @@
 
   const showState = ref(false);
   const localParams: any = ref({
-    serverId: '',
-    serverName: '',
-    serverType: '',
-    deviceType: '',
-    mainChannel: '',
+    district: null,
+    deviceType: null,
+    channelType: null,
+    channelCount: '1',
+    mainChannel: null,
     code: '',
   });
+  const serverOptions = ref<any[]>([]);
+  const serverList = ref<any[]>([]);
   const formBtnLoading = ref(false);
   const formRef: any = ref(null);
-  const showServerModal = ref(false);
 
   const deviceTypeOptions = [
     {
@@ -142,7 +132,7 @@
 
   // 表单验证
   const rules: FormRules = {
-    serverId: {
+    serverKey: {
       required: true,
       trigger: ['blur', 'change'],
       message: '请选择视频服务器',
@@ -160,25 +150,32 @@
 
   watch([() => props.showModel], async ([newShowModel]) => {
     showState.value = newShowModel;
+    if (newShowModel && newShowModel === true) {
+      serverList.value = await createServerList();
+      serverOptions.value = serverList.value.map((item) => ({
+        label: item.serverName,
+        value: item.serverKey,
+      }));
+    }
   });
 
-  const onSelectServer = () => {
-    showServerModal.value = true;
-  };
-  const checkServer = (dataRow: any) => {
-    try {
-      showServerModal.value = false;
-
-      if (!dataRow) return;
-
-      if (localParams.value) {
-        localParams.value.serverId = dataRow.serverId;
-        localParams.value.serverName = dataRow.serverName;
-        localParams.value.serverType = dataRow.serverType;
-      }
-    } catch (error) {
-      console.error('Error in checkProduct:', error);
-      window['$message']?.error('选择视频服务器时发生错误');
+  /**
+   * 获取服务器列表
+   */
+  const createServerList = async () => {
+    const params: VideoServerParams = {
+      status: 2,
+      key: '',
+    };
+    const result = (await getVideoServerList(params)) as unknown as {
+      status: string;
+      message: string;
+      data: any[];
+    };
+    if (result.status === 'success') {
+      return result.data;
+    } else {
+      return [];
     }
   };
 
@@ -188,18 +185,25 @@
     formBtnLoading.value = true;
     formRef.value.validate(async (errors: any) => {
       if (!errors) {
-        const serverId = localParams.value.serverId;
-        const serverType = localParams.value.serverType;
-
-        if (serverType === 'media') {
+        const serverKey = localParams.value.serverKey;
+        let serverType = 'BEM SIP';
+        for (let i = 0; i < serverList.value.length; i++) {
+          if (serverList.value[i].serverKey === serverKey) {
+            serverType = serverList.value[i].serverType;
+            break;
+          }
+        }
+        if (serverType === 'ZLMediaKit') {
           const devCode = 'C' + uniqueId();
+          localParams.value.serverKey = serverKey;
+          localParams.value.videoDomain = '';
           localParams.value.mainChannel = 0;
           localParams.value.code = devCode;
           showState.value = false;
           emit('submit', localParams.value);
         } else {
           const deviceType = localParams.value.deviceType;
-          const videoDomain = serverId + deviceType;
+          const videoDomain = serverKey + deviceType;
 
           //获取可用主通道号
           const params = {
@@ -217,10 +221,11 @@
             for (let i = 0; i < len; i++) {
               mainCodeStr = '0' + mainCodeStr;
             }
-            const deviceId = videoDomain + mainCodeStr;
-
+            const deviceCode = videoDomain + mainCodeStr;
+            localParams.value.serverKey = serverKey;
+            localParams.value.videoDomain = videoDomain;
             localParams.value.mainChannel = mainChannel;
-            localParams.value.code = deviceId;
+            localParams.value.code = deviceCode;
             showState.value = false;
             emit('submit', localParams.value);
           } else {

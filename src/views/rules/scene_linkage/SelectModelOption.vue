@@ -34,7 +34,7 @@
                     :class="selectDeviceId === item.deviceId ? 'selectRow' : ''"
                   >
                     <td>{{ item.deviceName }}</td>
-                    <td>{{ item.deviceId }}</td>
+                    <td>{{ item.deviceCode }}</td>
                     <td>{{ item.spaceRouteName }}</td>
                   </tr>
                 </tbody>
@@ -113,7 +113,7 @@
   const deviceList = ref<any[]>([]);
   const deviceModelList = ref<any[]>([]);
   const selectSpaceId = ref(0);
-  const selectDeviceId = ref('');
+  const selectDeviceId = ref(0);
   const selectDevice = ref<any>({});
 
   /**
@@ -215,6 +215,7 @@
       modelIdentity: item.modelIdentity,
       modelName: item.modelName,
       deviceId: item.deviceId,
+      deviceCode: item.deviceCode,
       deviceName: selectDevice.value.deviceName,
       position: selectDevice.value.spaceRouteName,
       dataType: dataType,

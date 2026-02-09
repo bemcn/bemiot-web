@@ -12,10 +12,6 @@ import {
   LogoutOutlined,
   UserOutlined,
   CheckOutlined,
-  GlobalOutlined,
-  ReadOutlined,
-  ReconciliationOutlined,
-  RocketOutlined,
 } from '@vicons/antd';
 
 export default {
@@ -32,8 +28,4 @@ export default {
   LogoutOutlined,
   UserOutlined,
   CheckOutlined,
-  GlobalOutlined,
-  ReadOutlined,
-  ReconciliationOutlined,
-  RocketOutlined,
 };

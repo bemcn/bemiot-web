@@ -1,3 +1,4 @@
+import { NTag } from 'naive-ui';
 import { h } from 'vue';
 import { BasicColumn } from '@/components/Table';
 import { format } from 'date-fns';
@@ -16,6 +17,22 @@ export const columns: BasicColumn<DeviceChannel>[] = [
   {
     title: '通道名称',
     key: 'channelName',
+  },
+  {
+    title: '状态',
+    key: 'status',
+    width: 120,
+    render(record) {
+      return h(
+        NTag,
+        {
+          type: record.status === 0 ? 'error' : 'success',
+        },
+        {
+          default: () => (record.status === 0 ? '离线' : '在线'),
+        }
+      );
+    },
   },
   {
     title: '通道类型',
@@ -51,8 +68,11 @@ export const columns: BasicColumn<DeviceChannel>[] = [
         case 138:
           typeStr = '移动传输设备';
           break;
+        case 139:
+          typeStr = 'URL拉流';
+          break;
         case 140:
-          typeStr = '视频存储';
+          typeStr = 'URL代理拉流';
           break;
         default:
           typeStr = '未知';
@@ -62,8 +82,8 @@ export const columns: BasicColumn<DeviceChannel>[] = [
     },
   },
   {
-    title: '设备编号',
-    key: 'device.deviceId',
+    title: '设备ID',
+    key: 'associatDevice',
     width: 200,
   },
   {

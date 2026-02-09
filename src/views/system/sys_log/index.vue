@@ -15,7 +15,7 @@
     <BasicTable
       :columns="columns"
       :request="loadDataTable"
-      :row-key="(row) => row.ts"
+      :row-key="(row) => row.id"
       ref="actionRef"
       :actionColumn="actionColumn"
       :scroll-x="1280"
@@ -49,7 +49,7 @@
   import { BasicTable, TableAction } from '@/components/Table';
   import { BasicForm, FormSchema, useForm } from '@/components/Form/index';
   import { PageLog } from '@/types/SystemModel';
-  import { getLogPageList, delLogById, delLogByIds, LogPageParams } from '@/api/system/logSystem';
+  import { getLogPageList, delLogById, delLogByIds, LogPageParams } from '@/api/system/sysLog';
   import { format } from 'date-fns';
   import { columns } from './columns';
   import { useUserStore } from '@/store/modules/user';
@@ -158,12 +158,10 @@
   const actionCell = () => {
     if (deleteLog) {
       return reactive({
-        width: 100,
+        width: 170,
         title: '操作',
         key: 'action',
         fixed: 'right',
-        align: 'center',
-        titleAlign: 'center',
         render(record: Recordable) {
           return h(TableAction as any, {
             style: 'button',
@@ -185,7 +183,7 @@
   const actionColumn = actionCell();
   // 查询表单对象
   const [register, { getFieldsValue }] = useForm({
-    gridProps: { cols: '1 s:1 m:2 l:4 xl:4 2xl:4' },
+    gridProps: { cols: '1 s:1 m:2 l:4 xl:5 2xl:5' },
     labelWidth: 80,
     schemas,
   });
@@ -273,10 +271,6 @@
 
   // 批量删除
   const handleDelArray = async () => {
-    if (!checkRow.value || checkRow.value.length === 0) {
-      window['$message'].warning('请至少选择一条记录');
-      return;
-    }
     const ids = checkRow.value.join(',');
     const params = {
       ids,

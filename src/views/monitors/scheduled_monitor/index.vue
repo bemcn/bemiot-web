@@ -1,6 +1,12 @@
 <template>
   <div class="scheduled-monitor">
-    <div class="mt-2">
+    <div class="n-layout-page-header">
+      <n-card :bordered="false" title="定时任务监控">
+        实时监控系统定时任务执行情况，包括任务执行统计和分类统计等关键指标。
+      </n-card>
+    </div>
+
+    <div class="mt-4">
       <!-- 任务执行情况统计 - 占据整行的70%宽度 -->
       <n-grid cols="1 s:1 m:7 l:7 xl:7 2xl:7" responsive="screen" :x-gap="16" :y-gap="16">
         <n-grid-item :span="5">
@@ -20,10 +26,10 @@
         class="mt-4"
       >
         <n-grid-item :span="5">
-          <SceneExecutionChart />
+          <TaskCategoryChart />
         </n-grid-item>
         <n-grid-item :span="2">
-          <SceneExecutionPie />
+          <TaskCategoryPie />
         </n-grid-item>
       </n-grid>
     </div>
@@ -32,14 +38,10 @@
 
 <script lang="ts" setup>
   import { ref, onMounted, onBeforeUnmount } from 'vue';
-  // @ts-ignore
   import TaskExecutionChart from './components/TaskExecutionChart.vue';
-  // @ts-ignore
   import TaskExecutionPie from './components/TaskExecutionPie.vue';
-  // @ts-ignore
-  import SceneExecutionChart from './components/SceneExecutionChart.vue';
-  // @ts-ignore
-  import SceneExecutionPie from './components/SceneExecutionPie.vue';
+  import TaskCategoryChart from './components/TaskCategoryChart.vue';
+  import TaskCategoryPie from './components/TaskCategoryPie.vue';
 
   const loading = ref(true);
 

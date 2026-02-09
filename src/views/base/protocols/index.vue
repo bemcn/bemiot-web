@@ -72,7 +72,6 @@
     delProtocolsByIds,
     ProtocolsPageParams,
   } from '@/api/base/protocols';
-  // @ts-ignore
   import { PlusOutlined, DeleteOutlined } from '@vicons/antd';
   import { columns } from './columns';
   import { useUserStore } from '@/store/modules/user';

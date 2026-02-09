@@ -4,12 +4,12 @@ import { RequestBody } from 'alova';
 // 定义资产属性接口类型
 export interface ProductAttrParams {
   classId?: number;
-  productId?: string;
+  productId?: number;
   key?: string;
 }
 export interface ProductAttrPageParams {
   classId?: number;
-  productId?: string;
+  productId?: number;
   key?: string;
   index?: number;
   size?: number;

@@ -89,9 +89,8 @@
   import { useRoute } from 'vue-router';
   import { useProjectSettingStore } from '@/store/modules/projectSetting';
   import { refreshAccessToken } from '@/api/login/token';
-  import { REFRESH_TOKEN, ACCESS_TOKEN, TIME_OUT } from '@/store/mutation-types';
+  import { REFRESH_TOKEN, ACCESS_TOKEN, TIME_OUT, AUTO_LOGIN } from '@/store/mutation-types';
   import { storage } from '@/utils/Storage';
-  import { useUserStore } from '@/store/modules/user';
 
   const { getDarkTheme } = useDesignSetting();
   const {
@@ -190,57 +189,56 @@
     accessToken: string;
     refreshToken: string;
   }
-
   const refreshUserToken = async () => {
     const refreshToken = storage.get(REFRESH_TOKEN);
-    if (refreshToken) {
-      const params = {
-        refreshToken: refreshToken,
-      };
-      const result = (await refreshAccessToken(params)) as {
-        status: string;
-        message: string;
-        data: TokenData;
-      };
-      if (result.status === 'success') {
-        const { data } = result;
-        const exTimer = 7000 * 1000;
-        const timestamp = new Date().getTime() + exTimer;
-
-        storage.set(ACCESS_TOKEN, data.accessToken, 7200);
-        storage.set(REFRESH_TOKEN, data.refreshToken, 7200);
-        storage.set(TIME_OUT, timestamp, 7200);
-
-        // 同时更新 user store 中的 token 值
-        const userStore = useUserStore();
-        userStore.setAccessToken(data.accessToken);
-        userStore.setRefreshToken(data.refreshToken);
-      } else {
-        if (timerToken !== null) {
-          clearInterval(timerToken);
-          timerToken = null;
-        }
-        //window.location.href = '/login';
-        return false;
+    const params = {
+      refreshToken: refreshToken,
+    };
+    console.log('刷新Token请求：' + params);
+    const result = refreshAccessToken(params) as {
+      status: string;
+      message: string;
+      data: TokenData;
+    };
+    if (result.status === 'success') {
+      const autoLogin = storage.get(AUTO_LOGIN, false);
+      const { data } = result;
+      let ex = 5000;
+      if (autoLogin) {
+        ex = 2590000;
       }
+      const exTimer = ex * 1000;
+      const timestamp = new Date().getTime() + exTimer;
+
+      storage.set(ACCESS_TOKEN, data.accessToken, ex);
+      storage.set(REFRESH_TOKEN, data.refreshToken, ex);
+      storage.set(TIME_OUT, timestamp);
+      if (autoLogin) {
+        storage.setCookie(ACCESS_TOKEN, data.accessToken, ex);
+      }
+      console.log('=============== refreshAccessToken ====================');
+      console.log('AccessToken刷新成功:', result);
+      console.log('=======================================================');
     } else {
+      console.log('=============== refreshAccessToken ====================');
+      console.log('AccessToken刷新失败:', result);
+      console.log('AccessToken刷新请求:', params);
+      console.log('=======================================================');
       if (timerToken !== null) {
         clearInterval(timerToken);
         timerToken = null;
       }
-      // 跳转登录界面
-      //window.location.href = '/login';
-      return false;
     }
   };
   const refreshToken = () => {
     timerToken = setInterval(() => {
       const timeOut = storage.get(TIME_OUT);
       const timestamp = new Date().getTime();
+      console.log('(timestamp)' + timestamp + ' >= ' + '(timeOut)' + timeOut);
       if (timestamp >= timeOut) {
         refreshUserToken();
       }
-    }, 5000);
+    }, 10000);
   };
 
   onMounted(() => {

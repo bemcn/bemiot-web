@@ -1,5 +1,6 @@
 import { Alova } from '@/utils/http/alova/index';
 import { RequestBody } from 'alova';
+import { Protocols, PageProtocols } from '@/types/BaseModel';
 
 // 定义通讯协议相关接口类型
 export interface ProtocolsPageParams {

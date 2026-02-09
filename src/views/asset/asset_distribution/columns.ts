@@ -11,12 +11,9 @@ export const columns: BasicColumn<Device>[] = [
     key: 'selection',
   } as unknown as BasicColumn<Device>,
   {
-    title: '序号',
-    key: 'index',
-    width: 72,
-    render(_row: any, index: number) {
-      return index + 1;
-    },
+    title: 'ID',
+    key: 'deviceId',
+    width: 80,
   },
   {
     title: '设备名称',
@@ -24,7 +21,7 @@ export const columns: BasicColumn<Device>[] = [
   },
   {
     title: '设备编号',
-    key: 'deviceId',
+    key: 'deviceCode',
   },
   {
     title: '绑定用户',
@@ -47,12 +44,9 @@ export const columns: BasicColumn<Device>[] = [
           typeStr = '监控设备';
           break;
         case 4:
-          typeStr = '视频存储设备';
-          break;
-        case 5:
           typeStr = '网关子设备';
           break;
-        case 6:
+        case 5:
           typeStr = '虚拟设备';
           break;
         default:
@@ -82,12 +76,9 @@ export const columnDev: BasicColumn<Device>[] = [
     key: 'selection',
   } as unknown as BasicColumn<Device>,
   {
-    title: '序号',
-    key: 'index',
-    width: 72,
-    render(_row: any, index: number) {
-      return index + 1;
-    },
+    title: 'ID',
+    key: 'deviceId',
+    width: 54,
   },
   {
     title: '设备名称',
@@ -95,7 +86,7 @@ export const columnDev: BasicColumn<Device>[] = [
   },
   {
     title: '设备编号',
-    key: 'deviceId',
+    key: 'deviceCode',
   },
   {
     title: '产品',
@@ -114,12 +105,9 @@ export const columnDev: BasicColumn<Device>[] = [
           typeStr = '监控设备';
           break;
         case 4:
-          typeStr = '视频存储设备';
-          break;
-        case 5:
           typeStr = '网关子设备';
           break;
-        case 6:
+        case 5:
           typeStr = '虚拟设备';
           break;
         default:

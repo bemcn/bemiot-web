@@ -1,81 +1,64 @@
 <template>
-  <div v-show="viewMain">
-    <n-card :bordered="false">
-      <BasicForm
-        :showAdvancedButton="false"
-        @register="register"
-        @submit="handleSubmit"
-        @reset="handleReset"
-      >
-        <template #statusSlot="{ model, field }">
-          <n-input v-model:value="model[field]" />
-        </template>
-      </BasicForm>
-    </n-card>
-    <n-card :bordered="false" class="mt-3">
-      <BasicTable
-        :columns="columns"
-        :request="loadDataTable"
-        :row-key="(row) => row.sceneId"
-        ref="actionRef"
-        :actionColumn="actionColumn"
-        :scroll-x="1280"
-        :striped="true"
-        @update:checked-row-keys="onCheckedRow"
-      >
-        <template #tableTitle>
-          <n-button v-if="addAuth" type="primary" @click="handleAdd">
-            <template #icon>
-              <n-icon>
-                <PlusOutlined />
-              </n-icon>
-            </template>
-            新增场景联动
-          </n-button>
-          <n-button v-if="addAuth" style="margin-left: 10px" type="primary" @click="handleTest">
-            <template #icon>
-              <n-icon>
-                <PlusOutlined />
-              </n-icon>
-            </template>
-            测试规则编辑
-          </n-button>
-          <n-button
-            v-if="deleteAuth"
-            style="margin-left: 10px"
-            type="primary"
-            @click="handleDelArray"
-          >
-            <template #icon>
-              <n-icon>
-                <DeleteOutlined />
-              </n-icon>
-            </template>
-            批量删除
-          </n-button>
-        </template>
+  <n-card :bordered="false">
+    <BasicForm
+      :showAdvancedButton="false"
+      @register="register"
+      @submit="handleSubmit"
+      @reset="handleReset"
+    >
+      <template #statusSlot="{ model, field }">
+        <n-input v-model:value="model[field]" />
+      </template>
+    </BasicForm>
+  </n-card>
+  <n-card :bordered="false" class="mt-3">
+    <BasicTable
+      :columns="columns"
+      :request="loadDataTable"
+      :row-key="(row) => row.sceneId"
+      ref="actionRef"
+      :actionColumn="actionColumn"
+      :scroll-x="1280"
+      :striped="true"
+      @update:checked-row-keys="onCheckedRow"
+    >
+      <template #tableTitle>
+        <n-button v-if="addAuth" type="primary" @click="handleAdd">
+          <template #icon>
+            <n-icon>
+              <PlusOutlined />
+            </n-icon>
+          </template>
+          新增场景联动
+        </n-button>
+        <n-button
+          v-if="deleteAuth"
+          style="margin-left: 10px"
+          type="primary"
+          @click="handleDelArray"
+        >
+          <template #icon>
+            <n-icon>
+              <DeleteOutlined />
+            </n-icon>
+          </template>
+          批量删除
+        </n-button>
+      </template>
 
-        <template #toolbar> </template>
-      </BasicTable>
-    </n-card>
-  </div>
-  <div v-show="viewMain === false">
-    <RulesEditor
-      :name="rulesName"
-      :data="null"
-      @close="() => (viewMain = true)"
+      <template #toolbar> </template>
+    </BasicTable>
+
+    <InfoFromModal
+      :showModel="showModal"
+      :title="modalTitle"
+      :options="groupOptions"
+      :params="formParams"
+      :action="action"
+      @close="() => (showModal = false)"
       @submit="reloadTable"
     />
-  </div>
-  <InfoFromModal
-    :showModel="showModal"
-    :title="modalTitle"
-    :options="groupOptions"
-    :params="formParams"
-    :action="action"
-    @close="() => (showModal = false)"
-    @submit="reloadTable"
-  />
+  </n-card>
 </template>
 
 <script lang="ts" setup>
@@ -97,8 +80,6 @@
   import { PlusOutlined, DeleteOutlined } from '@vicons/antd';
   // @ts-ignore
   import InfoFromModal from './InfoFromModal.vue';
-  // @ts-ignore
-  import RulesEditor from '@/components/RulesEditor/RulesEditor.vue';
 
   // 获取权限
   const userStore = useUserStore();
@@ -107,17 +88,14 @@
   const editAuth = auth.edit;
   const deleteAuth = auth.delete;
 
-  const viewMain = ref(false);
   const queryRef: any = ref(null);
   const groupOptions = ref<any[]>([]);
   const actionRef = ref();
   const showModal = ref(false);
-  const showTestModal = ref(false);
   const modalTitle = ref('');
   const action = ref('');
   const checkRow: any = ref(null);
   const formParams = ref<any>({});
-  const rulesName = ref('测试场景联动');
 
   // 查询表单渲染
   const schemas: FormSchema[] = [
@@ -278,12 +256,9 @@
       elDataObj: {},
       remark: '',
     };
-    viewMain.value = false;
-  };
-
-  // 测试规则编辑器
-  const handleTest = () => {
-    showTestModal.value = true;
+    modalTitle.value = '新增场景联动';
+    action.value = 'add';
+    showModal.value = true;
   };
 
   // 编辑
@@ -334,7 +309,7 @@
     } catch (error) {
       window['$message'].error('变更状态失败');
     }
-  };
+  }
 
   // 删除
   const handleDel = async (record: Recordable) => {

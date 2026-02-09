@@ -1,25 +1,18 @@
 import { BasicColumn } from '@/components/Table';
-import { Firmware, ProductModel, ModelAlarmRules } from '@/types/DeviceModel';
+import { Firmware, ProductModel, GeneralModel } from '@/types/DeviceModel';
 import { Drive } from '@/types/BaseModel';
-import { NTag, DataTableBaseColumn } from 'naive-ui';
+import { NTag } from 'naive-ui';
 import { h } from 'vue';
 
 export const columns = [
   {
-    title: '序号',
-    key: 'index',
+    title: 'ID',
+    key: 'productId',
     width: 72,
-    render(_row: any, index: number) {
-      return index + 1;
-    },
   },
   {
     title: '产品名称',
     key: 'productName',
-  },
-  {
-    title: '产品编号',
-    key: 'productId',
   },
   {
     title: '产品型号',
@@ -44,12 +37,9 @@ export const columns = [
           typeStr = '监控设备';
           break;
         case 4:
-          typeStr = '视频存储设备';
-          break;
-        case 5:
           typeStr = '网关子设备';
           break;
-        case 6:
+        case 5:
           typeStr = '虚拟设备';
           break;
         default:
@@ -96,7 +86,7 @@ export const columns = [
       return h(
         NTag,
         {
-          type: record.authEquipment === 0 ? 'default' : 'success',
+          type: record.authEquipment === 0 ? 'error' : 'success',
         },
         {
           default: () => (record.authEquipment === 0 ? '未启用' : '已启用'),
@@ -176,48 +166,26 @@ export const proModelColumns: BasicColumn<ProductModel>[] = [
   {
     title: '物模型名称',
     key: 'modelName',
-    width: 180,
   },
   {
     title: '物模型标识',
     key: 'modelIdentity',
-    width: 180,
-  },
-  {
-    title: '类型',
-    key: 'modelType',
-    width: 120,
-    render(record) {
-      let typeStr = '物理模型';
-      if (record.modelType === 1) {
-        typeStr = '虚拟模型';
-      }
-      return h(
-        NTag,
-        {
-          type: record.modelClass === 1 ? 'info' : 'success',
-        },
-        {
-          default: () => typeStr,
-        }
-      );
-    },
   },
   {
     title: '类别',
-    key: 'modelClass',
+    key: 'modelType',
     width: 120,
     render(record) {
       let typeStr = '属性';
-      if (record.modelClass === 2) {
+      if (record.modelType === 2) {
         typeStr = '功能';
-      } else if (record.modelClass === 3) {
+      } else if (record.modelType === 3) {
         typeStr = '事件';
       }
       return h(
         NTag,
         {
-          type: record.modelClass === 1 ? 'info' : record.modelClass === 2 ? 'success' : 'warning',
+          type: record.modelType === 1 ? 'info' : record.modelType === 2 ? 'success' : 'warning',
         },
         {
           default: () => typeStr,
@@ -228,7 +196,7 @@ export const proModelColumns: BasicColumn<ProductModel>[] = [
   {
     title: '数据类型',
     key: 'dataType',
-    width: 100,
+    width: 120,
     render(record) {
       let dataTypeStr: string;
       switch (record.dataType) {
@@ -266,7 +234,7 @@ export const proModelColumns: BasicColumn<ProductModel>[] = [
   {
     title: '图表展示',
     key: 'charts',
-    width: 100,
+    width: 120,
     render(record) {
       return h(
         NTag,
@@ -282,7 +250,7 @@ export const proModelColumns: BasicColumn<ProductModel>[] = [
   {
     title: '历史存储',
     key: 'history',
-    width: 100,
+    width: 120,
     render(record) {
       return h(
         NTag,
@@ -295,102 +263,110 @@ export const proModelColumns: BasicColumn<ProductModel>[] = [
       );
     },
   },
-  {
-    title: '告警规则',
-    key: 'alarmRileCount',
-    width: 100,
-  },
 ];
-
-export const alarmRulesColumns: DataTableBaseColumn<ModelAlarmRules>[] = [
+export const generalModelColumns: BasicColumn<GeneralModel>[] = [
   {
     type: 'selection',
     key: 'selection',
-  } as unknown as BasicColumn<ModelAlarmRules>,
+  } as unknown as BasicColumn<GeneralModel>,
   {
-    title: '规则名称',
-    key: 'rulesName',
-    width: 180,
+    title: '物模型名称',
+    key: 'modelName',
   },
   {
-    title: '告警规则',
-    key: 'alarmRules',
-    render(record) {
-      let rules = '';
-      if (record.alarmRules && record.alarmRules.length > 0) {
-        try {
-          const parsedRules = JSON.parse(record.alarmRules);
-          if (Array.isArray(parsedRules)) {
-            parsedRules.forEach(
-              (
-                item: { link: string; model: string; operator: string; value: string },
-                index: number
-              ) => {
-                if (index > 0) {
-                  if (item.link === 'and') {
-                    rules += ' <span style="color: #781481ff">与</span> ';
-                  } else {
-                    rules += ' <span style="color: #781481ff">或</span> ';
-                  }
-                }
-                rules +=
-                  '<span style="color: #2d8cf0">' +
-                  item.model +
-                  '</span> <span style="color: #a15f14ff">' +
-                  item.operator +
-                  '</span> ' +
-                  item.value;
-              }
-            );
-          }
-        } catch (error) {}
-      }
-      return h('span', { innerHTML: rules });
-    },
+    title: '物模型标识',
+    key: 'modelIdentity',
   },
   {
-    title: '告警等级',
-    key: 'alarmLevel',
+    title: '类别',
+    key: 'modelType',
     width: 120,
     render(record) {
-      let levelStr = '无';
-      if (record.alarmLevel === 1) {
-        levelStr = '一般告警';
-      } else if (record.alarmLevel === 2) {
-        levelStr = '重要告警';
-      } else if (record.alarmLevel === 3) {
-        levelStr = '紧急告警';
+      let typeStr = '属性';
+      if (record.modelType === 2) {
+        typeStr = '功能';
+      } else if (record.modelType === 3) {
+        typeStr = '事件';
       }
       return h(
         NTag,
         {
-          type:
-            record.alarmLevel === 1
-              ? 'info'
-              : record.alarmLevel === 2
-              ? 'warning'
-              : record.alarmLevel === 3
-              ? 'error'
-              : 'success',
+          type: record.modelType === 1 ? 'info' : record.modelType === 2 ? 'success' : 'warning',
         },
         {
-          default: () => levelStr,
+          default: () => typeStr,
         }
       );
     },
   },
   {
-    title: '通知方式',
-    key: 'alertsType',
+    title: '数据类型',
+    key: 'dataType',
     width: 120,
     render(record) {
-      let alertTypeStr = '所有用户';
-      if (record.alertsType === 1) {
-        alertTypeStr = '设备所有者';
-      } else if (record.alertsType === 2) {
-        alertTypeStr = '指定用户';
+      let dataTypeStr: string;
+      switch (record.dataType) {
+        case 'int':
+          dataTypeStr = '整数';
+          break;
+        case 'number':
+          dataTypeStr = '小数';
+          break;
+        case 'text':
+          dataTypeStr = '字符串';
+          break;
+        case 'date':
+          dataTypeStr = '日期时间';
+          break;
+        case 'bool':
+          dataTypeStr = '布尔值';
+          break;
+        case 'array':
+          dataTypeStr = '数组';
+          break;
+        case 'enum':
+          dataTypeStr = '枚举';
+          break;
+        case 'struct':
+          dataTypeStr = '对象';
+          break;
+        default:
+          dataTypeStr = '未知';
+          break;
       }
-      return h('span', alertTypeStr);
+      return h('span', dataTypeStr);
+    },
+  },
+  {
+    title: '图表展示',
+    key: 'charts',
+    width: 120,
+    render(record) {
+      return h(
+        NTag,
+        {
+          type: record.charts === 0 ? 'error' : 'success',
+        },
+        {
+          default: () => (record.charts === 0 ? '否' : '是'),
+        }
+      );
+    },
+  },
+  {
+    title: '历史存储',
+    key: 'history',
+    width: 120,
+    render(record) {
+      return h(
+        NTag,
+        {
+          type: record.history === 0 ? 'error' : 'success',
+        },
+        {
+          default: () => (record.history === 0 ? '否' : '是'),
+        }
+      );
     },
   },
 ];

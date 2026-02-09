@@ -18,7 +18,7 @@
       :row-key="(row) => row.firmwareId"
       ref="actionRef"
       :actionColumn="actionColumn"
-      :scroll-x="1000"
+      :scroll-x="1280"
       :striped="true"
       @update:checked-row-keys="onCheckedRow"
     >
@@ -294,10 +294,6 @@
 
   // 批量删除
   const handleDelArray = async () => {
-    if (!checkRow.value || checkRow.value.length === 0) {
-      window['$message'].warning('请至少选择一条记录');
-      return;
-    }
     const ids = checkRow.value.join(',');
     const params = {
       ids,

@@ -68,7 +68,7 @@
                         <n-tag
                           :color="{ color: '#13467f', textColor: '#fff', borderColor: '#13467f' }"
                         >
-                          执行{{ Number(index) + 1 }}
+                          执行{{ index + 1 }}
                         </n-tag>
                       </div>
                       <div class="item-filed">
@@ -76,7 +76,7 @@
                           size="small"
                           ghost
                           style="min-width: 320px; color: #666"
-                          @click="selectOptionModel(Number(index))"
+                          @click="selectOptionModel(index)"
                         >
                           {{
                             item.modelId === 0
@@ -94,8 +94,8 @@
                           v-model:value="item.value"
                         />
                       </div>
-                      <div class="item-del" v-if="Number(index) > 0">
-                        <n-icon size="22" title="删除" @click="handleModelDel(Number(index))">
+                      <div class="item-del" v-if="index > 0">
+                        <n-icon size="22" title="删除" @click="handleModelDel(index)">
                           <CloseCircleFilled />
                         </n-icon>
                       </div>
@@ -248,7 +248,8 @@
       modelId: 0,
       modelIdentity: '',
       modelName: '',
-      deviceId: '',
+      deviceId: 0,
+      deviceCode: '',
       deviceName: '',
       position: '',
       dataType: 'int',
@@ -276,6 +277,7 @@
     localParams.value.controlRuleData[i].modelIdentity = data.modelIdentity;
     localParams.value.controlRuleData[i].modelName = data.modelName;
     localParams.value.controlRuleData[i].deviceId = data.deviceId;
+    localParams.value.controlRuleData[i].deviceCode = data.deviceCode;
     localParams.value.controlRuleData[i].deviceName = data.deviceName;
     localParams.value.controlRuleData[i].position = data.position;
     localParams.value.controlRuleData[i].dataType = data.dataType;
@@ -289,6 +291,7 @@
       modelIdentity: '',
       modelName: '',
       deviceId: 0,
+      deviceCode: '',
       deviceName: '',
       position: '',
       dataType: 'int',
@@ -315,6 +318,7 @@
       localParams.value.controlRuleData[i].modelIdentity = data.modelIdentity;
       localParams.value.controlRuleData[i].modelName = data.modelName;
       localParams.value.controlRuleData[i].deviceId = data.deviceId;
+      localParams.value.controlRuleData[i].deviceCode = data.deviceCode;
       localParams.value.controlRuleData[i].deviceName = data.deviceName;
       localParams.value.controlRuleData[i].position = data.position;
       localParams.value.controlRuleData[i].dataType = data.dataType;
@@ -371,7 +375,7 @@
   };
 </script>
 <style lang="less" scoped>
-  .func-box :deep(.n-form-item .n-form-item-feedback-wrapper) {
+  .func-box /deep/ .n-form-item .n-form-item-feedback-wrapper {
     display: none;
   }
   .frm-rule {

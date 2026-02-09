@@ -3,13 +3,11 @@ import { RequestBody } from 'alova';
 
 // 定义视频通道相关接口类型
 export interface DeviceChannelParams {
-  deviceId?: string;
-  channelType?: number;
+  deviceId?: number;
   key?: string;
 }
 export interface DeviceChannelPageParams {
-  deviceId?: string;
-  channelType?: number;
+  deviceId?: number;
   key?: string;
   index?: number;
   size?: number;
@@ -49,6 +47,19 @@ export function getDeviceChannel(params: { id: string }) {
  */
 export function addDeviceChannel(params: RequestBody | undefined) {
   return Alova.Post<InResult>('/device_channel/addDeviceChannel', params, {
+    meta: {
+      isReturnNativeResponse: true,
+    },
+  });
+}
+
+/**
+ * @description: 批量新增视频通道
+ * @param params 视频通道信息
+ * @returns 返回创建结果
+ */
+export function addDeviceChannelArray(params: RequestBody | undefined) {
+  return Alova.Post<InResult>('/device_channel/addDeviceChannelArray', params, {
     meta: {
       isReturnNativeResponse: true,
     },

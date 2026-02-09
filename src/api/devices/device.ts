@@ -4,13 +4,11 @@ import { RequestBody } from 'alova';
 // 定义设备相关接口类型
 export interface DeviceParams {
   types?: number;
-  typeArray?: string;
   classId?: number;
   groupId?: number;
-  gatewayId?: string;
   userId?: number;
   spaceId?: number;
-  productId?: string;
+  productId?: number;
   status?: number;
   filed?: string;
   key?: string;
@@ -19,13 +17,11 @@ export interface DeviceParams {
 }
 export interface DevicePageParams {
   types?: number;
-  typeArray?: string;
   classId?: number;
   groupId?: number;
-  gatewayId?: string;
   userId?: number;
   spaceId?: number;
-  productId?: string;
+  productId?: number;
   status?: number;
   filed?: string;
   key?: string;
@@ -97,7 +93,7 @@ export function getDevicesMap(params: DeviceParams) {
 /**
  * @description: 获取设备树
  */
-export function getDevicesTree(params: { types?: string; lastType?: number }) {
+export function getDevicesTree(params: { types?: number; lastType?: number }) {
   return Alova.Get<InResult>('/device/getDevicesTree', {
     params,
   });
@@ -124,6 +120,15 @@ export function getDevice(params: { id: number }) {
  */
 export function useMainChannel(params: { videoDomain: string }) {
   return Alova.Get<InResult>('/device/useMainChannel', {
+    params,
+  });
+}
+
+/**
+ * @description: 获取设备编号
+ */
+export function getDeviceCode(params: GetCodeParams) {
+  return Alova.Get<InResult>('/device/getDeviceCode', {
     params,
   });
 }

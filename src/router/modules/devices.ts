@@ -53,15 +53,6 @@ const routes: Array<RouteRecordRaw> = [
         component: () => import('@/views/devices/device_map/index.vue'),
       },
       {
-        path: 'device_group',
-        name: `${routeName}_device_group`,
-        meta: {
-          title: '设备分组',
-          permissions: ['device_group'],
-        },
-        component: () => import('@/views/devices/device_group/index.vue'),
-      },
-      {
         path: 'product',
         name: `${routeName}_product`,
         meta: {
@@ -71,15 +62,6 @@ const routes: Array<RouteRecordRaw> = [
         component: () => import('@/views/devices/product/index.vue'),
       },
       {
-        path: 'product_class',
-        name: `${routeName}_product_class`,
-        meta: {
-          title: '产品分类',
-          permissions: ['product_class'],
-        },
-        component: () => import('@/views/devices/product_class/index.vue'),
-      },
-      {
         path: 'firmware',
         name: `${routeName}_firmware`,
         meta: {
@@ -87,6 +69,15 @@ const routes: Array<RouteRecordRaw> = [
           permissions: ['firmware'],
         },
         component: () => import('@/views/devices/firmware/index.vue'),
+      },
+      {
+        path: 'general_model',
+        name: `${routeName}_general_model`,
+        meta: {
+          title: '通用物模型',
+          permissions: ['general_model'],
+        },
+        component: () => import('@/views/devices/general_model/index.vue'),
       },
     ],
   },

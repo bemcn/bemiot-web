@@ -11,7 +11,7 @@
     <BasicTable
       :columns="columns"
       :request="loadDataTable"
-      :row-key="(row) => row.rulesId"
+      :row-key="(row) => row.id"
       ref="actionRef"
       :actionColumn="actionColumn"
       :scroll-x="1500"
@@ -51,6 +51,7 @@
 
     <InfoFromModal
       :showModel="showModal"
+      :title="modalTitle"
       :params="formParams"
       :action="action"
       @close="() => (showModal = false)"
@@ -60,19 +61,12 @@
 </template>
 
 <script lang="ts" setup>
-  import { h, onMounted, reactive, ref } from 'vue';
+  import { h, reactive, ref } from 'vue';
   import { BasicTable, TableAction } from '@/components/Table';
   import { BasicForm, FormSchema, useForm } from '@/components/Form/index';
   import { useUserStore } from '@/store/modules/user';
-  import { columns } from './columns';
-  import {
-    getModelAlarmRulesPageList,
-    delModelAlarmRules,
-    delModelAlarmRulesIds,
-    ModelAlarmRulesPageParams,
-  } from '@/api/devices/modelAlarmRules';
-  import { getProductList, ProductParams } from '@/api/devices/product';
-  import { PageModelAlarmRules, Product } from '@/types/DeviceModel';
+  // @ts-ignore
+  import { AlarmConfig, columns } from './columns';
   // @ts-ignore
   import { PlusOutlined, DeleteOutlined } from '@vicons/antd';
   // @ts-ignore
@@ -95,25 +89,14 @@
   }
 
   const actionRef = ref();
-  const queryRef: any = ref(null);
   const checkRow: any = ref(null);
   const showModal = ref(false);
+  const modalTitle = ref('');
   const action = ref('');
   const formParams = ref<any>({});
-  const productOptions = ref<any>([]);
 
   // 查询表单渲染
   const schemas: FormSchema[] = [
-    {
-      field: 'productId',
-      component: 'NSelect',
-      label: '产品名称',
-      componentProps: {
-        placeholder: '请选择产品名称',
-        filterable: true,
-        options: productOptions,
-      },
-    },
     {
       field: 'level',
       component: 'NSelect',
@@ -182,7 +165,7 @@
 
   // 查询表单对象
   const [register, { getFieldsValue }] = useForm({
-    gridProps: { cols: '1 s:2 m:3 l:4 xl:5 2xl:6' },
+    gridProps: { cols: '1 s:1 m:2 l:3 xl:4 2xl:4' },
     labelWidth: 80,
     schemas,
   });
@@ -193,51 +176,77 @@
    */
   const loadDataTable = async (res: any) => {
     const fieldsValue = getFieldsValue();
-    let params: any = {} as ModelAlarmRulesPageParams;
-    if (fieldsValue.hasOwnProperty('productId')) {
-      params.productId = fieldsValue.productId;
-    }
+    let params: any = {};
+
     if (fieldsValue.hasOwnProperty('level')) {
       params.level = fieldsValue.level;
     }
+
     if (fieldsValue.hasOwnProperty('key')) {
       params.key = fieldsValue.key;
     }
+
     params.index = res.page || res.current;
     params.size = res.pageSize || res.size;
-    queryRef.value = getFieldsValue();
 
-    const result = (await getModelAlarmRulesPageList(params)) as unknown as {
-      status: string;
-      message: string;
-      data: PageModelAlarmRules;
+    // 模拟数据请求
+    const result = {
+      records: [
+        {
+          id: 1,
+          alarmName: '温度过高告警',
+          level: 1,
+          deviceProperty: '温度',
+          deviceName: '温湿度传感器01',
+          minValue: 10,
+          maxValue: 50,
+          responseMethods: ['message', 'sms'],
+          responseMethodText: '消息通知,短信通知',
+          notifyUsers: ['zhangsan', 'lisi'],
+          notifyUserText: '张三,李四',
+          status: 1,
+          createTime: '2025-10-30T10:30:25',
+        },
+        {
+          id: 2,
+          alarmName: '湿度异常告警',
+          level: 2,
+          deviceProperty: '湿度',
+          deviceName: '温湿度传感器02',
+          minValue: 20,
+          maxValue: 80,
+          responseMethods: ['message'],
+          responseMethodText: '消息通知',
+          notifyUsers: ['wangwu'],
+          notifyUserText: '王五',
+          status: 1,
+          createTime: '2025-10-29T09:15:42',
+        },
+        {
+          id: 3,
+          alarmName: '电量不足告警',
+          level: 3,
+          deviceProperty: '电量',
+          deviceName: '智能电表05',
+          minValue: 20,
+          maxValue: undefined,
+          responseMethods: ['message'],
+          responseMethodText: '消息通知',
+          notifyUsers: ['zhaoliu'],
+          notifyUserText: '赵六',
+          status: 0,
+          createTime: '2025-10-28T08:22:17',
+        },
+      ],
+      total: 3,
+      current: 1,
+      pages: 1,
+      size: 10,
     };
-    if (result.status === 'success') {
-      return result.data;
-    } else {
-      return {
-        records: [],
-        total: 0,
-        current: res.page || res.current,
-        pages: 1,
-        size: res.pageSize || res.size,
-      };
-    }
-  };
-  const loadProductList = async () => {
-    const params: any = {} as ProductParams;
-    const result = (await getProductList(params)) as unknown as {
-      status: string;
-      message: string;
-      data: Product[];
-    };
-    if (result.status === 'success') {
-      const productList = result.data;
-      productOptions.value = productList.map((product) => ({
-        label: product.productName,
-        value: product.productId,
-      }));
-    }
+
+    // 模拟请求延迟
+    await new Promise((resolve) => setTimeout(resolve, 300));
+    return result;
   };
 
   // 刷新表格
@@ -248,79 +257,45 @@
   // 新增
   const handleAdd = () => {
     formParams.value = {
-      rulesId: '',
-      rulesName: '',
-      productId: '',
-      productName: '',
-      modelIdentity: '',
-      modelName: '',
-      dataType: '',
-      alarmLevel: '1',
-      alarmRules: '',
-      rules: [
-        {
-          link: '',
-          model: '',
-          operator: '==',
-          value: '',
-        },
-      ],
-      alertsType: '1',
-      specifyUsers: '',
-      users: [],
+      id: 0,
+      alarmName: '',
+      level: null,
+      deviceProperty: '',
+      deviceName: '',
+      minValue: undefined,
+      maxValue: undefined,
+      responseMethods: [],
+      notifyUsers: [],
+      status: true,
     };
+    modalTitle.value = '新增告警设置';
     action.value = 'add';
     showModal.value = true;
   };
 
   // 编辑
   const handleEdit = (record: Recordable) => {
-    const rules = JSON.parse(record.alarmRules);
-    let users = [];
-    if (record.specifyUsers && record.specifyUsers.length > 0) {
-      users = record.specifyUsers.split(',');
-    }
-
     formParams.value = {
-      rulesId: record.rulesId,
-      rulesName: record.rulesName,
-      productId: record.productId,
-      productName: record.product.productName,
-      modelIdentity: record.modelIdentity,
-      modelName: record.model.modelName,
-      dataType: record.model.dataType,
-      alarmLevel: record.alarmLevel + '',
-      alarmRules: record.alarmRules,
-      rules,
-      alertsType: record.alertsType + '',
-      specifyUsers: record.specifyUsers,
-      users,
+      id: record.id,
+      alarmName: record.alarmName,
+      level: record.level,
+      deviceProperty: record.deviceProperty,
+      deviceName: record.deviceName,
+      minValue: record.minValue,
+      maxValue: record.maxValue,
+      responseMethods: [...record.responseMethods],
+      notifyUsers: [...record.notifyUsers],
+      status: record.status === 1,
     };
+    modalTitle.value = '编辑告警设置';
     action.value = 'edit';
     showModal.value = true;
   };
 
   // 删除
   const handleDel = async (record: Recordable) => {
-    const params = {
-      id: record.firmwareId,
-    };
-
-    try {
-      const result = (await delModelAlarmRules(params)) as unknown as {
-        status: string;
-        message: string;
-      };
-
-      if (result.status === 'success') {
-        window['$message'].success('删除成功');
-        reloadTable();
-      } else {
-        window['$message'].error(result.message);
-      }
-    } catch (error) {
-      window['$message'].error('删除失败');
-    }
+    window['$message'].success('删除成功');
+    reloadTable();
   };
 
   // 批量选择
@@ -334,21 +309,8 @@
       window['$message'].warning('请至少选择一条记录');
       return;
     }
-    const ids = checkRow.value.join(',');
-    const params = {
-      ids,
-    };
-
-    const result = (await delModelAlarmRulesIds(params)) as unknown as {
-      status: string;
-      message: string;
-    };
-    if (result.status === 'success') {
-      window['$message'].success('删除成功');
-      reloadTable();
-    } else {
-      window['$message'].error(result.message);
-    }
+    window['$message'].success('批量删除成功');
+    reloadTable();
   };
 
   // 查询点击
@@ -360,8 +322,4 @@
   const handleReset = () => {
     reloadTable();
   };
-
-  onMounted(() => {
-    loadProductList();
-  });
 </script>

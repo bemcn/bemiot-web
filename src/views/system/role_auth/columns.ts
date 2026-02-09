@@ -134,28 +134,6 @@ export const roleAuthData = [
     auths: [],
   },
   {
-    label: '设备分组',
-    value: 'device_group',
-    check: false,
-    auths: [
-      {
-        key: 'add',
-        label: '新增',
-        check: false,
-      },
-      {
-        key: 'edit',
-        label: '编辑',
-        check: false,
-      },
-      {
-        key: 'delete',
-        label: '删除',
-        check: false,
-      },
-    ],
-  },
-  {
     label: '产品管理',
     value: 'product',
     check: false,
@@ -165,38 +143,6 @@ export const roleAuthData = [
         label: '查看',
         check: false,
       },
-      {
-        key: 'add',
-        label: '新增',
-        check: false,
-      },
-      {
-        key: 'edit',
-        label: '编辑',
-        check: false,
-      },
-      {
-        key: 'delete',
-        label: '删除',
-        check: false,
-      },
-      {
-        key: 'import',
-        label: '导入',
-        check: false,
-      },
-      {
-        key: 'export',
-        label: '导出',
-        check: false,
-      },
-    ],
-  },
-  {
-    label: '产品分类',
-    value: 'product_class',
-    check: false,
-    auths: [
       {
         key: 'add',
         label: '新增',
@@ -257,6 +203,33 @@ export const roleAuthData = [
       {
         key: 'export',
         label: '导出',
+        check: false,
+      },
+    ],
+  },
+  {
+    label: '通用物模型',
+    value: 'general_model',
+    check: false,
+    auths: [
+      {
+        key: 'view',
+        label: '查看',
+        check: false,
+      },
+      {
+        key: 'add',
+        label: '新增',
+        check: false,
+      },
+      {
+        key: 'edit',
+        label: '编辑',
+        check: false,
+      },
+      {
+        key: 'delete',
+        label: '删除',
         check: false,
       },
     ],
@@ -744,6 +717,82 @@ export const roleAuthData = [
     ],
   },
   {
+    label: '产品分类',
+    value: 'product_class',
+    check: false,
+    auths: [
+      {
+        key: 'add',
+        label: '新增',
+        check: false,
+      },
+      {
+        key: 'edit',
+        label: '编辑',
+        check: false,
+      },
+      {
+        key: 'delete',
+        label: '删除',
+        check: false,
+      },
+      {
+        key: 'import',
+        label: '导入',
+        check: false,
+      },
+      {
+        key: 'export',
+        label: '导出',
+        check: false,
+      },
+    ],
+  },
+  {
+    label: '设备分组',
+    value: 'device_group',
+    check: false,
+    auths: [
+      {
+        key: 'add',
+        label: '新增',
+        check: false,
+      },
+      {
+        key: 'edit',
+        label: '编辑',
+        check: false,
+      },
+      {
+        key: 'delete',
+        label: '删除',
+        check: false,
+      },
+    ],
+  },
+  {
+    label: '设备分组',
+    value: 'device_group',
+    check: false,
+    auths: [
+      {
+        key: 'add',
+        label: '新增',
+        check: false,
+      },
+      {
+        key: 'edit',
+        label: '编辑',
+        check: false,
+      },
+      {
+        key: 'delete',
+        label: '删除',
+        check: false,
+      },
+    ],
+  },
+  {
     label: '通讯协议',
     value: 'protocols',
     check: false,
@@ -820,50 +869,6 @@ export const roleAuthData = [
     ],
   },
   {
-    label: '外部接口',
-    value: 'ext_interface',
-    check: false,
-    auths: [
-      {
-        key: 'add',
-        label: '新增',
-        check: false,
-      },
-      {
-        key: 'edit',
-        label: '编辑',
-        check: false,
-      },
-      {
-        key: 'delete',
-        label: '删除',
-        check: false,
-      },
-    ],
-  },
-  {
-    label: '消息模板',
-    value: 'msg_templates',
-    check: false,
-    auths: [
-      {
-        key: 'add',
-        label: '新增',
-        check: false,
-      },
-      {
-        key: 'edit',
-        label: '编辑',
-        check: false,
-      },
-      {
-        key: 'delete',
-        label: '删除',
-        check: false,
-      },
-    ],
-  },
-  {
     label: '系统设置',
     value: 'sys_param',
     check: false,
@@ -876,8 +881,8 @@ export const roleAuthData = [
     ],
   },
   {
-    label: '消息设置',
-    value: 'msg_system',
+    label: '第3方接口',
+    value: 'ext_interface',
     check: false,
     auths: [
       {

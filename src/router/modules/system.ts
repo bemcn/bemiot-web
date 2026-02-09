@@ -28,13 +28,13 @@ const routes: Array<RouteRecordRaw> = [
         component: () => import('@/views/system/sys_param/index.vue'),
       },
       {
-        path: 'msg_system',
-        name: `${routeName}_msg_system`,
+        path: 'ext_interface',
+        name: `${routeName}_ext_interface`,
         meta: {
-          title: '消息设置',
-          permissions: ['msg_system'],
+          title: '第3方接口',
+          permissions: ['ext_interface'],
         },
-        component: () => import('@/views/system/msg_system/index.vue'),
+        component: () => import('@/views/system/ext_interface/index.vue'),
       },
       {
         path: 'role_auth',

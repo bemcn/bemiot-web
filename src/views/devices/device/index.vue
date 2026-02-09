@@ -103,9 +103,8 @@
           <n-grid x-gap="15" cols="3 s:1 m:2 l:2 xl:3 2xl:3">
             <n-gi v-for="(item, index) in dataList" :key="index">
               <n-card
-                content-style="padding: 0px;"
+                content-style="padding: 0px"
                 footer-style="padding: 10px 15px; background: ##fafafc"
-                style="margin-top: 7px; margin-bottom: 7px"
               >
                 <div class="card-box">
                   <div class="top-line">
@@ -156,52 +155,31 @@
                         <n-tag
                           size="small"
                           :color="{ color: '#fff', borderColor: '#ccc', textColor: '#999' }"
-                          style="margin-right: 10px"
                           >{{ item.product?.trans }}</n-tag
-                        >
-                        <n-tag
-                          size="small"
-                          :color="{ color: '#fff', borderColor: '#ccc', textColor: '#999' }"
-                          >{{ item.spaceRouteName }}</n-tag
                         >
                       </div>
                     </div>
                   </div>
-                  <div class="item-box">
-                    <div class="item-line">
-                      <div class="item-col">
-                        <div class="itemLabel">编号:</div>
-                        <div class="itemValue">{{ item.deviceId }}</div>
-                      </div>
-                      <div class="item-col">
-                        <div class="itemLabel">产品:</div>
-                        <div class="itemValue">{{ item.product?.productName }}</div>
-                      </div>
-                    </div>
-                    <div class="item-line">
-                      <div class="item-col">
-                        <div class="itemLabel">类型:</div>
-                        <div class="itemValue">
-                          {{
-                            item.types === 1
-                              ? '直连设备'
-                              : item.types === 2
-                              ? '网关设备'
-                              : item.types === 3
-                              ? '监控设备'
-                              : item.types === 4
-                              ? '视频存储设备'
-                              : item.types === 5
-                              ? '网关子设备'
-                              : '虚拟设备'
-                          }}
-                        </div>
-                      </div>
-                      <div class="item-col">
-                        <div class="itemLabel">分组:</div>
-                        <div class="itemValue">{{ item.group?.groupName }}</div>
-                      </div>
-                    </div>
+                  <div class="item-line">
+                    <n-descriptions
+                      label-placement="left"
+                      :column="2"
+                      label-style="font-size:14px; color:#999"
+                      content-style="font-size:14px; color:#666"
+                    >
+                      <n-descriptions-item label="设备编号">{{
+                        item.deviceCode
+                      }}</n-descriptions-item>
+                      <n-descriptions-item label="安装位置">{{
+                        item.position?.spaceName
+                      }}</n-descriptions-item>
+                      <n-descriptions-item label="所属产品">{{
+                        item.product?.productName
+                      }}</n-descriptions-item>
+                      <n-descriptions-item label="设备类型">{{
+                        item.product?.types
+                      }}</n-descriptions-item>
+                    </n-descriptions>
                   </div>
                 </div>
                 <template v-if="viewAuth || editAuth || deleteAuth" #footer>
@@ -392,15 +370,19 @@
         placeholder: '请选择',
         options: [
           {
-            value: '1',
+            value: 1,
             label: '未激活',
           },
           {
-            value: '3',
-            label: '启用',
+            value: 3,
+            label: '在线',
           },
           {
-            value: '2',
+            value: 4,
+            label: '离线',
+          },
+          {
+            value: 2,
             label: '禁用',
           },
         ],
@@ -591,8 +573,9 @@
     const fieldsValue = getFieldsValue();
     let params = {} as DevicePageParams;
     if (route.query.id) {
-      const productId = Array.isArray(route.query.id) ? route.query.id[0] : route.query.id;
-      if (productId) {
+      const idParam = Array.isArray(route.query.id) ? route.query.id[0] : route.query.id;
+      const productId = Number(idParam);
+      if (!isNaN(productId)) {
         params.productId = productId;
       }
     }
@@ -688,17 +671,35 @@
   // 查看
   const handleView = (record: Recordable) => {
     let paramsArray = [];
-    try {
-      if (record.paramsData) {
-        paramsArray = JSON.parse(record.paramsData);
-      }
-    } catch (e) {
-      console.error('解析paramsData失败:', e);
-      paramsArray = [];
+    if (record.paramsData) {
+      paramsArray = JSON.parse(record.paramsData);
     }
 
     formParams.value = {
-      ...record,
+      deviceId: record.deviceId,
+      deviceCode: record.deviceCode,
+      deviceName: record.deviceName,
+      productId: record.productId,
+      productName: record.product.productName,
+      groupId: record.groupId + '',
+      groupName: record.group?.groupName,
+      spaceId: record.spaceId + '',
+      spaceRoute: record.spaceRoute,
+      spaceRouteName: record.spaceRouteName,
+      gatewayId: record.gatewayId,
+      gatewayName: record.gateway?.deviceName,
+      locateMethod: record.locateMethod,
+      openShadow: record.openShadow === 1 ? true : false,
+      address: record.address,
+      ipAddress: record.ipAddress,
+      longitude: record.longitude + '',
+      latitude: record.latitude + '',
+      installImg: record.installImg,
+      firmwareVersion: record.firmwareVersion,
+      remark: record.remark,
+      status: record.status,
+      activeTime: record.activeTime,
+      erCode: record.erCode,
       paramsArray,
     };
     showViewModal.value = true;
@@ -708,6 +709,7 @@
   const optionDeviceModel = (record: Recordable) => {
     formParams.value = {
       deviceId: record.deviceId,
+      deviceCode: record.deviceCode,
       deviceName: record.deviceName,
     };
     showIotModal.value = true;
@@ -747,27 +749,17 @@
   // 新增
   const handleAdd = () => {
     const paramsArray = [];
-    const monitoring = {
-      deviceId: '',
-      serverId: '',
-      serverName: '',
-      serverType: 'media',
-      ipAddress: '',
-      port: '',
-      account: '',
-      password: '',
-      ptzType: '0',
-    };
 
     formParams.value = {
-      deviceId: '',
+      deviceId: 0,
+      deviceCode: '',
       deviceName: '',
-      productId: '',
+      productId: 0,
       productName: '',
       groupId: null,
       spaceId: spaceId.value > 0 ? spaceId.value + '' : null,
       spaceRoute: '',
-      gatewayId: '',
+      gatewayId: 0,
       gatewayName: '',
       locateMethod: '0',
       openShadow: false,
@@ -780,11 +772,9 @@
       serverKey: '',
       videoDomain: '',
       mainChannel: 0,
-      channelId: '',
       remark: '',
       paramsData: '',
       paramsArray,
-      monitoring,
       types: 0,
     };
 
@@ -796,37 +786,13 @@
   // 编辑
   const handleEdit = (record: Recordable) => {
     let paramsArray = [];
-    let monitoring = {
-      deviceId: '',
-      serverId: '',
-      serverName: '',
-      serverType: 'media',
-      ipAddress: '',
-      port: '',
-      account: '',
-      password: '',
-      ptzType: '0',
-    };
-    console.log(record.param);
-    if (record.types === 3 || record.types === 4) {
-      const monitor = record.param;
-      monitoring = {
-        deviceId: monitor.deviceId,
-        serverId: monitor.serverId,
-        serverName: monitor.server.serverName,
-        serverType: monitor.serverType,
-        ipAddress: monitor.ipAddress,
-        port: monitor.port + '',
-        account: monitor.account,
-        password: monitor.password,
-        ptzType: monitor.ptzType + '',
-      };
-    } else {
-      paramsArray = record.params;
+    if (record.paramsData) {
+      paramsArray = JSON.parse(record.paramsData);
     }
 
     formParams.value = {
       deviceId: record.deviceId,
+      deviceCode: record.deviceCode,
       deviceName: record.deviceName,
       productId: record.productId,
       productName: record.product.productName,
@@ -847,14 +813,11 @@
       serverKey: record.serverKey,
       videoDomain: record.videoDomain,
       mainChannel: record.mainChannel,
-      channelId: record.channelId,
       remark: record.remark,
       paramsData: record.paramsData,
       paramsArray,
-      monitoring,
       types: record.product.types,
     };
-    console.log(formParams.value);
     modalTitle.value = '编辑设备';
     action.value = 'edit';
     showModal.value = true;
@@ -918,6 +881,8 @@
   };
 
   onMounted(async () => {
+    const id = route.query.id;
+    console.log('ID:', id);
     data.value = await createTreeData();
     groupData.value = await createGroupData();
   });
@@ -953,8 +918,8 @@
         position: relative;
         .top-line {
           width: 100%;
-          height: 80px;
-          padding: 10px 15px;
+          height: 100px;
+          padding: 15px;
           .images {
             width: 60px;
             height: 60px;
@@ -991,35 +956,10 @@
             }
           }
         }
-        .item-box {
+        .item-line {
           width: 100%;
-          padding: 0 15px 10px 0px;
+          padding: 0 15px 15px 15px;
           border-bottom: 1px solid #ebeef5;
-          .item-line {
-            width: 100%;
-            height: 28px;
-            .item-col {
-              width: 50%;
-              height: 28px;
-              font-size: 13px;
-              float: left;
-              .itemLabel {
-                width: 54px;
-                height: 28px;
-                padding-left: 15px;
-                color: #8e8e8e;
-                float: left;
-              }
-              .itemValue {
-                height: 28px;
-                margin-left: 54px;
-                color: #5e5e5e;
-                white-space: nowrap;
-                overflow: hidden;
-                text-overflow: ellipsis;
-              }
-            }
-          }
         }
       }
       .page-line {

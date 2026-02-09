@@ -47,14 +47,6 @@ const routes: Array<RouteRecordRaw> = [
         },
         component: () => import('@/views/exception/iconView.vue'),
       },
-      {
-        path: 'about',
-        name: 'exception-about',
-        meta: {
-          title: '关于',
-        },
-        component: () => import('@/views/exception/about.vue'),
-      },
     ],
   },
 ];

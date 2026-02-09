@@ -104,16 +104,12 @@
       value: '3',
     },
     {
-      label: '视频存储设备',
+      label: '网关子设备',
       value: '4',
     },
     {
-      label: '网关子设备',
-      value: '5',
-    },
-    {
       label: '虚拟设备',
-      value: '6',
+      value: '5',
     },
   ];
   const productOptions = ref<any[]>([]);
@@ -174,7 +170,7 @@
       let productList = list.map((item: any) => {
         return {
           label: item.productName,
-          value: item.productId,
+          value: item.productId + '',
         };
       });
       return productList;
@@ -226,9 +222,8 @@
       1: '直连设备',
       2: '网关设备',
       3: '监控设备',
-      4: '视频存储设备',
-      5: '网关子设备',
-      6: '虚拟设备',
+      4: '网关子设备',
+      5: '虚拟设备',
     };
     return typeMap[type] || '未知类型';
   };
@@ -247,7 +242,7 @@
       params.spaceId = parseInt(queryParamData.spaceId);
     }
     if (queryParamData.productId) {
-      params.productId = queryParamData.productId;
+      params.types = parseInt(queryParamData.productId);
     }
     console.log('查询点击', params);
 
@@ -295,7 +290,7 @@
           content: `
             <div style="padding: 10px;">
               <h3>${device.deviceName}</h3>
-              <p><strong>设备编码:</strong> ${device.deviceId}</p>
+              <p><strong>设备编码:</strong> ${device.deviceCode}</p>
               <p><strong>设备类型:</strong> ${getDeviceTypeName(device.types)}</p>
               <p><strong>状态:</strong> ${device.status === 0 ? '在线' : '离线'}</p>
               <p><strong>安装位置:</strong> ${device.spaceRouteName || '未指定'}</p>

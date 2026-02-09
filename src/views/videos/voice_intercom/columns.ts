@@ -1,26 +1,31 @@
 import { BasicColumn } from '@/components/Table';
-import { Device } from '@/types/DeviceModel';
+import { VideoServer } from '@/types/VideoModel';
+import { format } from 'date-fns';
 
-export const columns: BasicColumn<Device>[] = [
+export const columns: BasicColumn<VideoServer>[] = [
   {
-    title: '通道号',
-    key: 'channel',
+    title: 'ID',
+    key: 'serverId',
     width: 100,
   },
   {
-    title: '通道名称',
-    key: 'channelName',
-  },
-  {
-    title: 'IP地址',
-    key: 'monitoring.ipAddress',
-  },
-  {
-    title: '设备名称',
-    key: 'device.deviceName',
+    title: '摄像头名称',
+    key: 'deviceName',
   },
   {
     title: '安装位置',
-    key: 'device.spaceRouteName',
+    key: 'deviceName',
+  },
+  {
+    title: '流ID',
+    key: 'streamId',
+  },
+  {
+    title: '录像时间',
+    key: 'createTime',
+    render(record) {
+      const date = new Date(record.createTime);
+      return format(date, 'yyyy-MM-dd HH:mm:ss');
+    },
   },
 ];

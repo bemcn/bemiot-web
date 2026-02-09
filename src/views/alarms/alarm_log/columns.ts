@@ -1,54 +1,61 @@
 import { BasicColumn } from '@/components/Table';
 import { format } from 'date-fns';
 import { h } from 'vue';
-import { LogModelAlarm } from '@/types/AlarmModel';
+import { NTag } from 'naive-ui';
 
-export const columns: BasicColumn<LogModelAlarm>[] = [
+export interface AlarmLog {
+  id: string;
+  level: number; // 1: 紧急告警, 2: 重要告警, 3: 一般告警
+  levelText: string;
+  levelType: 'error' | 'warning' | 'info';
+  keyword: string;
+  deviceName: string;
+  content: string;
+  createTime: string;
+}
+
+export const columns: BasicColumn<AlarmLog>[] = [
   {
     type: 'selection',
     key: 'selection',
-  } as unknown as BasicColumn<LogModelAlarm>,
+  } as unknown as BasicColumn<AlarmLog>,
   {
-    title: '时间',
-    key: 'ts',
-    width: 180,
+    title: '告警时间',
+    key: 'createTime',
     render(record) {
-      const date = new Date(record.ts);
+      const date = new Date(record.createTime);
       return format(date, 'yyyy-MM-dd HH:mm:ss');
     },
   },
   {
-    title: '告警信息',
-    key: 'description',
-    width: 250,
-  },
-  {
-    title: '物模型标识',
-    key: 'modelIdentity',
-    width: 150,
-  },
-  {
-    title: '物模型名称',
-    key: 'model.modelName',
-    width: 150,
-  },
-  {
-    title: '告警值',
-    key: 'alarmValue',
-    width: 100,
-  },
-  {
-    title: '告警状态',
-    key: 'alarmStatus',
-    width: 100,
+    title: '告警级别',
+    key: 'level',
     render(record) {
-      let statusStr = '';
-      if (record.alarmStatus === 1) {
-        statusStr = '告警中';
-      } else {
-        statusStr = '解除告警';
-      }
-      return h('span', statusStr);
+      const levelMap = {
+        1: { text: '紧急告警', type: 'error' },
+        2: { text: '重要告警', type: 'warning' },
+        3: { text: '一般告警', type: 'info' },
+      };
+      
+      const levelInfo = levelMap[record.level as keyof typeof levelMap] || { text: '未知', type: 'default' };
+      
+      return h(
+        NTag,
+        {
+          type: levelInfo.type as any,
+        },
+        {
+          default: () => levelInfo.text,
+        }
+      );
     },
+  },
+  {
+    title: '设备名称',
+    key: 'deviceName',
+  },
+  {
+    title: '告警内容',
+    key: 'content',
   },
 ];

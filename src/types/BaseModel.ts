@@ -22,6 +22,30 @@ export interface SpacePositionTree {
   label: string;
   children?: SpacePositionTree[] | null;
 }
+export interface ProductClass {
+  classId: number;
+  className: string;
+  levelId: number;
+  classRoute: string;
+  classRouteName: string;
+  orderNum: number;
+  remark: string;
+}
+
+export interface ProductClassTable {
+  classId: number;
+  className: string;
+  levelId: number;
+  remark: string;
+  orderNum: number;
+  children?: ProductClassTable[] | null;
+}
+
+export interface ProductClassTree {
+  id: number;
+  label: string;
+  children?: ProductClassTree[] | null;
+}
 
 export interface DeviceGroup {
   groupId: number;
@@ -117,51 +141,6 @@ export interface Certificate {
 
 export interface PageCertificate {
   records: Certificate[];
-  total: number;
-  current: number;
-  pages: number;
-  size: number;
-}
-
-export interface Platform {
-  platformId: string;
-  platformName: string;
-  appKey: string;
-  secretKey: string;
-  accessType: number;
-  authJumpUrl: string;
-  bindRegUrl: string;
-  loginJumpUrl: string;
-  errorUrl: string;
-  remark: string;
-  isSystem: number;
-  iconImg: string;
-  status: number;
-}
-
-export interface PagePlatform {
-  records: Platform[];
-  total: number;
-  current: number;
-  pages: number;
-  size: number;
-}
-
-export interface MsgTemplate {
-  templateId: number;
-  scopeApp: string;
-  identity: string;
-  title: string;
-  content: string;
-  example: string;
-  subtype: number;
-  enumValues: string;
-  signName: string;
-  createTime: string;
-}
-
-export interface PageMsgTemplate {
-  records: MsgTemplate[];
   total: number;
   current: number;
   pages: number;

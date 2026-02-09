@@ -6,7 +6,7 @@
       v-if="navMode === 'horizontal' || (navMode === 'horizontal-mix' && mixMenu)"
     >
       <div class="logo" v-if="navMode === 'horizontal'">
-        <img :src="websiteConfig.logo" alt="" :class="{ 'mr-2': !collapsed }" />
+        <img :src="websiteConfig.logo" alt="" />
         <h2 v-show="!collapsed" class="title">{{ websiteConfig.title }}</h2>
       </div>
       <AsideMenu
@@ -72,49 +72,19 @@
       </n-breadcrumb>
     </div>
     <div class="layout-header-right">
-      <!-- 官网 -->
-      <div class="layout-header-trigger layout-header-trigger-min">
-        <n-button text class="avatar" @click="openHomePage">
-          <template #icon>
+      <div
+        class="layout-header-trigger layout-header-trigger-min"
+        v-for="item in iconList"
+        :key="item.icon"
+      >
+        <n-tooltip placement="bottom">
+          <template #trigger>
             <n-icon size="18">
-              <GlobalOutlined />
+              <component :is="item.icon" v-on="item.eventObject || {}" />
             </n-icon>
           </template>
-          <span>官网</span>
-        </n-button>
-      </div>
-      <!-- 用户手册 -->
-      <div class="layout-header-trigger layout-header-trigger-min">
-        <n-button text class="avatar" @click="openHelpWord">
-          <template #icon>
-            <n-icon size="18">
-              <ReadOutlined />
-            </n-icon>
-          </template>
-          <span>用户手册</span>
-        </n-button>
-      </div>
-      <!-- 开发手册 -->
-      <div class="layout-header-trigger layout-header-trigger-min">
-        <n-button text class="avatar" @click="openDevWord">
-          <template #icon>
-            <n-icon size="18">
-              <ReconciliationOutlined />
-            </n-icon>
-          </template>
-          <span>开发手册</span>
-        </n-button>
-      </div>
-      <!-- 关于 -->
-      <div class="layout-header-trigger layout-header-trigger-min">
-        <n-button text class="avatar" @click="openAbout">
-          <template #icon>
-            <n-icon size="18">
-              <RocketOutlined />
-            </n-icon>
-          </template>
-          <span>关于</span>
-        </n-button>
+          <span>{{ item.tips }}</span>
+        </n-tooltip>
       </div>
       <!--切换全屏-->
       <div class="layout-header-trigger layout-header-trigger-min">
@@ -168,6 +138,7 @@
   import { useProjectSetting } from '@/hooks/setting/useProjectSetting';
   import { AsideMenu } from '@/layout/components/Menu';
   import { RedirectName } from '@/router/constant';
+  import { useScreenLockStore } from '@/store/modules/screenLock';
   import { useUserStore } from '@/store/modules/user';
   import { TABS_ROUTES } from '@/store/mutation-types';
   import { NDialogProvider, useDialog, useMessage } from 'naive-ui';
@@ -190,6 +161,7 @@
     emits: ['update:collapsed'],
     setup(props, { emit }) {
       const userStore = useUserStore();
+      const useLockscreen = useScreenLockStore();
       const message = useMessage();
       const dialog = useDialog();
       const { navMode, navTheme, headerSetting, menuSetting, crumbsSetting } = useProjectSetting();
@@ -279,6 +251,9 @@
               router
                 .replace({
                   name: 'Login',
+                  query: {
+                    redirect: route.fullPath,
+                  },
                 })
                 .finally(() => location.reload());
             });
@@ -306,32 +281,18 @@
         }
       };
 
-      // 打开官网
-      const openHomePage = () => {
-        window.open('http://www.bemcn.com/', '_blank');
-      };
-
-      // 打开用户手册
-      const openHelpWord = () => {
-        window.open('https://help.bemcn.com/word/', '_blank');
-      };
-
-      // 打开用户手册
-      const openDevWord = () => {
-        window.open('https://help.bemcn.com/dev/', '_blank');
-      };
-
-      // 打开关于页面
-      const openAbout = () => {
-        // router.push({ path: '/exception/about' });
-        window.open('http://bemcn.com/cms/c/cms_bem_bemdangan_jj.html', '_blank');
-      };
-
       // 图标列表
       const iconList = [
         {
           icon: 'SearchOutlined',
           tips: '搜索',
+        },
+        {
+          icon: 'LockOutlined',
+          tips: '锁屏',
+          eventObject: {
+            click: () => useLockscreen.setLock(true),
+          },
         },
       ];
       const avatarOptions = [
@@ -370,10 +331,6 @@
         ...toRefs(state),
         iconList,
         toggleFullScreen,
-        openHomePage,
-        openHelpWord,
-        openDevWord,
-        openAbout,
         doLogout,
         route,
         dropdownSelect,
@@ -423,7 +380,8 @@
 
         img {
           width: auto;
-          height: 26px;
+          height: 32px;
+          margin-right: 10px;
         }
 
         .title {
@@ -431,7 +389,7 @@
         }
       }
 
-      :deep(.ant-breadcrumb span:last-child .link-text) {
+      ::v-deep(.ant-breadcrumb span:last-child .link-text) {
         color: #515a6e;
       }
 
@@ -500,7 +458,7 @@
     }
 
     .layout-header-left {
-      :deep(.n-breadcrumb .n-breadcrumb-item:last-child .n-breadcrumb-item__link) {
+      ::v-deep(.n-breadcrumb .n-breadcrumb-item:last-child .n-breadcrumb-item__link) {
         color: #515a6e;
       }
     }
@@ -519,4 +477,12 @@
     left: 200px;
     z-index: 11;
   }
+
+  //::v-deep(.menu-router-link) {
+  //  color: #515a6e;
+  //
+  //  &:hover {
+  //    color: #1890ff;
+  //  }
+  //}
 </style>

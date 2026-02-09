@@ -1,8 +1,6 @@
 import { useGlobSetting } from '@/hooks/setting';
 import { encryptUtils } from '@/utils/encryptUtils';
 import { useUser } from '@/store/modules/user';
-import { storage } from '@/utils/Storage';
-import { ACCESS_TOKEN } from '@/store/mutation-types';
 
 // 添加接口定义
 interface HeaderParams {
@@ -26,8 +24,8 @@ export default class SignUtils {
    * @returns 带签名的请求头
    */
   createHeader(param: Object): HeaderParams {
-    // 直接从 storage 中获取最新的 accessToken，而不是从 store 中获取可能过期的值
-    const accessToken = storage.get(ACCESS_TOKEN, '');
+    const userStore = useUser();
+    const accessToken = userStore.getAccessToken ?? '';
     const timer = new Date().getTime();
     const nonceTimer = timer / 1000;
     const timestamp = parseInt(nonceTimer.toString());

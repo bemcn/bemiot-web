@@ -1,16 +1,13 @@
 <template>
-  <n-card :bordered="false" class="monitor-card" size="small">
+  <n-card :bordered="false" title="任务执行情况统计" class="monitor-card" size="small">
     <div class="monitor-info">
-      <div class="label">任务执行情况统计</div>
-      <div class="space">
-        <n-space justify="end" class="control-space">
-          <n-radio-group v-model:value="timeRange" @update:value="handleTimeRangeChange">
-            <n-radio-button value="day">日统计</n-radio-button>
-            <n-radio-button value="week">周统计</n-radio-button>
-            <n-radio-button value="month">月统计</n-radio-button>
-          </n-radio-group>
-        </n-space>
-      </div>
+      <n-space justify="end" class="control-space">
+        <n-radio-group v-model:value="timeRange" @update:value="handleTimeRangeChange">
+          <n-radio-button value="day">日统计</n-radio-button>
+          <n-radio-button value="week">周统计</n-radio-button>
+          <n-radio-button value="month">月统计</n-radio-button>
+        </n-radio-group>
+      </n-space>
     </div>
     <div class="chart-container">
       <div ref="chartRef" class="chart"></div>
@@ -20,7 +17,6 @@
 
 <script lang="ts" setup>
   import { ref, onMounted, onBeforeUnmount, nextTick } from 'vue';
-  import { getTaskStatistics } from '@/api/monitors/monitorsTask';
   import { init } from '@/utils/lib/echarts';
   // @ts-ignore
   import * as echarts from '@/utils/lib/echarts';
@@ -29,51 +25,36 @@
   let chart: ReturnType<typeof init> | null = null;
   const timeRange = ref('day');
 
-  // 获取图表数据
-  const initChartData = async () => {
-    const params = {
-      group: timeRange.value,
-    };
+  // 初始化图表数据
+  const initChartData = () => {
+    const data: string[] = [];
+    const successData: number[] = [];
+    const failData: number[] = [];
+    const exceptionData: number[] = [];
 
-    const result = (await getTaskStatistics(params)) as unknown as {
-      status: string;
-      message: string;
-      data: any;
-    };
-    if (result.status === 'success') {
-      return result.data;
+    let count = 0;
+    if (timeRange.value === 'day') {
+      count = 24; // 24小时
+    } else if (timeRange.value === 'week') {
+      count = 7; // 7天
     } else {
-      return {
-        xAxis: [
-          '0:00',
-          '1:00',
-          '2:00',
-          '3:00',
-          '4:00',
-          '5:00',
-          '6:00',
-          '7:00',
-          '8:00',
-          '9:00',
-          '10:00',
-          '11:00',
-          '12:00',
-          '13:00',
-          '14:00',
-          '15:00',
-          '16:00',
-          '17:00',
-          '18:00',
-          '19:00',
-          '20:00',
-          '21:00',
-          '22:00',
-          '23:00',
-        ],
-        successData: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        failData: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      };
+      count = 30; // 30天
     }
+
+    for (let i = 0; i < count; i++) {
+      data.push(
+        timeRange.value === 'day'
+          ? `${i}:00`
+          : timeRange.value === 'week'
+          ? `第${i + 1}天`
+          : `${i + 1}日`
+      );
+      successData.push(Math.floor(Math.random() * 100));
+      failData.push(Math.floor(Math.random() * 50));
+      exceptionData.push(Math.floor(Math.random() * 30));
+    }
+
+    return { data, successData, failData, exceptionData };
   };
 
   // 初始化图表
@@ -87,17 +68,17 @@
   };
 
   // 更新图表
-  const updateChart = async () => {
+  const updateChart = () => {
     if (!chart) return;
 
-    const data = await initChartData();
+    const { data, successData, failData, exceptionData } = initChartData();
 
     const option = {
       tooltip: {
         trigger: 'axis',
       },
       legend: {
-        data: ['成功', '失败'],
+        data: ['成功', '失败', '异常'],
       },
       grid: {
         left: '3%',
@@ -108,7 +89,7 @@
       xAxis: {
         type: 'category',
         boundaryGap: false,
-        data: data.xAxis,
+        data: data,
       },
       yAxis: {
         type: 'value',
@@ -117,7 +98,7 @@
         {
           name: '成功',
           type: 'line',
-          data: data.successData,
+          data: successData,
           smooth: true,
           lineStyle: {
             width: 2,
@@ -126,7 +107,16 @@
         {
           name: '失败',
           type: 'line',
-          data: data.failData,
+          data: failData,
+          smooth: true,
+          lineStyle: {
+            width: 2,
+          },
+        },
+        {
+          name: '异常',
+          type: 'line',
+          data: exceptionData,
           smooth: true,
           lineStyle: {
             width: 2,
@@ -144,12 +134,11 @@
     }
   };
 
-  const handleTimeRangeChange = (_value: string) => {
-    console.log(timeRange.value);
+  const handleTimeRangeChange = () => {
     updateChart();
   };
 
-  // 数据更新
+  // 模拟数据更新
   let dataTimer: ReturnType<typeof setInterval> | null = null;
 
   onMounted(() => {
@@ -176,26 +165,15 @@
 
 <style lang="less" scoped>
   .monitor-card {
-    height: 425px;
+    height: 300px;
     .monitor-info {
-      height: 45px;
-      .label {
-        height: 35px;
-        line-height: 35px;
-        font-size: 16px;
-        float: left;
-      }
-      .space {
-        height: 35px;
-        float: right;
-        .control-space {
-          margin-bottom: 10px;
-        }
-      }
+      height: 20%;
+    }
+    .control-space {
+      margin-bottom: 10px;
     }
     .chart-container {
-      height: 380px;
-      padding-bottom: 30px;
+      height: 80%;
       .chart {
         width: 100%;
         height: 100%;

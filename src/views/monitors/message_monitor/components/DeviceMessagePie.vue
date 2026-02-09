@@ -1,10 +1,5 @@
 <template>
-  <n-card :bordered="false" class="monitor-card" size="small">
-    <div class="monitor-info">
-      <div class="monitor-info">
-        <div class="label">消息分类汇总</div>
-      </div>
-    </div>
+  <n-card :bordered="false" title="设备消息总计" class="monitor-card" size="small">
     <div class="chart-container">
       <div ref="chartRef" class="chart"></div>
     </div>
@@ -13,7 +8,6 @@
 
 <script lang="ts" setup>
   import { ref, onMounted, onBeforeUnmount, nextTick } from 'vue';
-  import { getClassTotal } from '@/api/monitors/monitorsMessage';
   import { init } from '@/utils/lib/echarts';
   // @ts-ignore
   import * as echarts from '@/utils/lib/echarts';
@@ -21,24 +15,6 @@
   const chartRef = ref<HTMLDivElement | null>(null);
   let chart: ReturnType<typeof init> | null = null;
 
-  // 获取图表数据
-  const initChartData = async () => {
-    const result = (await getClassTotal()) as unknown as {
-      status: string;
-      message: string;
-      data: any;
-    };
-    if (result.status === 'success') {
-      return result.data;
-    } else {
-      return [
-        {
-          name: '默认分组',
-          value: 0,
-        },
-      ];
-    }
-  };
   // 初始化图表
   const initChart = () => {
     if (!chartRef.value) return;
@@ -50,9 +26,15 @@
   };
 
   // 更新图表
-  const updateChart = async () => {
+  const updateChart = () => {
     if (!chart) return;
-    const data = await initChartData();
+
+    // 随机生成数据
+    const send = Math.floor(Math.random() * 10000) + 1000;
+    const receive = Math.floor(Math.random() * 10000) + 1000;
+    const alarm = Math.floor(Math.random() * 1000) + 100;
+    const event = Math.floor(Math.random() * 2000) + 200;
+
     const option = {
       tooltip: {
         trigger: 'item',
@@ -62,7 +44,7 @@
       },
       series: [
         {
-          name: '消息分类汇总',
+          name: '设备消息总计',
           type: 'pie',
           radius: ['40%', '70%'],
           avoidLabelOverlap: false,
@@ -85,7 +67,12 @@
           labelLine: {
             show: false,
           },
-          data: data,
+          data: [
+            { value: send, name: '发送消息' },
+            { value: receive, name: '接收消息' },
+            { value: alarm, name: '设备告警' },
+            { value: event, name: '事件上报' },
+          ],
         },
       ],
     };
@@ -99,7 +86,7 @@
     }
   };
 
-  // 数据更新
+  // 模拟数据更新
   let dataTimer: ReturnType<typeof setInterval> | null = null;
 
   onMounted(() => {
@@ -126,19 +113,9 @@
 
 <style lang="less" scoped>
   .monitor-card {
-    height: 425px;
-    .monitor-info {
-      height: 45px;
-      .label {
-        height: 35px;
-        line-height: 35px;
-        font-size: 16px;
-        float: left;
-      }
-    }
+    height: 300px;
     .chart-container {
-      height: 380px;
-      padding-bottom: 30px;
+      height: 100%;
       .chart {
         width: 100%;
         height: 100%;

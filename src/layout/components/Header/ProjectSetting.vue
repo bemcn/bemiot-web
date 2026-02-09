@@ -375,7 +375,7 @@
     }
 
     .dark-switch .n-switch {
-      :deep(.n-switch__rail) {
+      ::v-deep(.n-switch__rail) {
         background-color: #000e1c;
       }
     }
