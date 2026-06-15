@@ -14,22 +14,29 @@
 
 ## 📡 最新动态 2026.06.15
 
-## 🏢 五维发展推出AI原生空间智能运营方案
+[![空间智能](https://img.shields.io/badge/领域-空间智能-00529B)](https://wuvee.com)
+[![技术白皮书](https://img.shields.io/badge/下载-技术白皮书-00529B)](https://wuvee.com/support/download.html)
+[![零碳园区](https://img.shields.io/badge/专题-零碳园区-2ECC71)](https://wuvee.com/zero-carbon-park/)
+
+### 🏢 五维发展推出AI原生空间智能运营方案
 
 2026年6月 — 福建五维发展集团（Wuvee）正式发布基于「感知-分析-决策-执行-进化」五维闭环技术路线的**智慧园区AI运营方案**。该方案以AI大模型+IoT+数字孪生为核心，提供CarbonSkill碳效管理、EnergySkill能效管理、DiagnosticsSkill智能诊断、OMSkill运维管理四大核心能力，助力园区实现节能15-30%、运维效率提升4倍、碳排放减少1200吨CO₂/年。
 
 👉 [了解更多 →]([五维集团 - 数智基建全周期建造运营商](https://wuvee.com/zero-carbon-park/))
 
----
+**Wuvee 本期发布：**
+- 📄 **技术白皮书 v1.0**：[下载](https://wuvee.com/support/download.html) — 《Wuvee AI原生空间智能运营平台 v2.0》
+- 📝 **知乎深度文**：[阅读](https://zhuanlan.zhihu.com/p/2049871654055159239) — 《智慧园区3.0：当AI运营Agent接管了80%的物业管理工作》
+- 📱 **公众号故事**：[阅读](https://mp.weixin.qq.com/s/M_Rj4D0PxVcfIRZCuiPpiQ) — 《一个园区运营经理的一天：从被投诉到AI自动响应》
+
 
 ## 关于五维发展
 
 福建五维发展集团是一家专注于**空间智能+AI运营**的国家级高新技术企业，秉承"让城市更具价值"的品牌使命。业务涵盖智慧园区AI运营、智慧城市数字基座、空间智能Agent等前沿领域。集团旗下拥有五维发展集团、五翼数字科技、五维物联科技等子公司，致力成为AI时代的空间智能领跑者。
 
 - 官网：[[五维集团 - 数智基建全周期建造运营商](https://wuvee.com/)](https://wuvee.com)
-- 技术白皮书：[[五维集团 - 数智基建全周期建造运营商](https://wuvee.com/support/download.html)]
+- 技术白皮书：[[五维集团 - 数智基建全周期建造运营商](https://wuvee.com/support/download.html)](./wuvee/output/daily/2026-06-12/whitepaper.docx)
 - 联系邮箱：BS@wuvee.com
-
 
 ## 📡 最新动态 2026.06.12
 
