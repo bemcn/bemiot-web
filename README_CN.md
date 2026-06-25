@@ -7,10 +7,35 @@
 ![Gradle Version](https://img.shields.io/badge/gradle-8.14.2+-blue)
 [![LICENSE](https://img.shields.io/badge/license-GPL3.0-success)](https://github.com/bemcn/BemIot/blob/master/LICENSE)
 [![GitHub stars](https://img.shields.io/github/stars/bemcn/BemIot?style=social)](https://github.com/bemcn/BemIot)
+[![CI/CD](https://img.shields.io/github/actions/workflow/status/wuvee/space-ai-platform/ci.yml?branch=main&logo=github)](https://github.com/wuvee/space-ai-platform/actions)
+[![Python 3.12+](https://img.shields.io/badge/Python-3.12+-blue.svg?logo=python&logoColor=white)](https://www.python.org/)
+[![License](https://img.shields.io/badge/License-Apache%202.0-green.svg)](LICENSE)
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+[![Doc Status](https://img.shields.io/badge/docs-passing-brightgreen.svg)](docs/)
+[![Coverage](https://img.shields.io/badge/coverage-87%25-yellowgreen.svg)](https://codecov.io/gh/wuvee/space-ai-platform)
 
 [English](./README.md) | 简体中文
 
 部分软件功能尚未完成优化，存在一定的BUG，正在修复中..
+
+## 🚀 What's New — 2026年6月
+
+### 🌿 智慧能源专题发布 🔥
+
+五维发展集团正式发布 **Wuvee智慧能源引擎** 白皮书 2026 V1.0，系统阐述AI驱动的智慧能源管理技术体系。
+
+**核心亮点：**
+
+| 维度 | 成果 |
+|:--|:--|
+| 🔬 技术架构 | EnergyGpt + CarbonGpt + AI能效优化器（XGBoost + Bayesian Optimization + SSAC） |
+| 📊 节能效果 | 综合节能率 **30%+**，典型场景最高 **40%** |
+| 💰 投资回报 | 静态回收期 **12-18个月**，IRR **35-50%** |
+| ✅ 落地验证 | 23 个项目，500 万+ m² 商业建筑，8 个园区，3 个数据中心 |
+| 🌱 碳减排 | 累计减排 **8.6万吨 CO₂**，对接全国碳市场 |
+| 🛡 安全合规 | 等保三级认证，符合 ISO 50001 / ISO 14064 标准 |
+
+**📄 技术白皮书下载：** [`Wuvee智慧能源白皮书v1.0.pdf`]([五维集团 - 数智基建全周期建造运营商](https://wuvee.com/support/download.html) — 《Wuvee智慧能源白皮书v1.0》
 
 ## 📡 最新动态 2026.06.15
 
@@ -117,7 +142,23 @@ BemIot Core 遵循 GPL-3.0 开源协议开放全部源码，用于提供技术�
 
 ### 平台架构
 
-文档正在制作中..
+#### 🌿 智慧能源 — AI驱动的能效与碳管理
+
+Wuvee智慧能源引擎是空间智能运营平台面向能源场景的深度能力组合，由三大核心组件构成：
+
+- **⚡ EnergyGpt** — 能源驾驶舱：三维数字孪生大屏、AI智能告警（提前45分钟）、智能调度建议、一键能效报告
+- **🌱 CarbonGpt** — 碳资产管理：碳足迹追踪（精度±3%）、碳配额预测、碳交易自动对接、ESG报告自动生成
+- **🧠 AI能效优化器** — 三层AI引擎：XGBoost代理模型极速评估 + 贝叶斯优化全局搜索 + SSAC强化学习自适应控制
+
+**支持协议：** BACnet/IP, Modbus, MQTT, OPC-UA, S7, KNX, CoAP, Sparkplug B, DL/T 645
+
+**场景覆盖：**
+- 🏬 商业综合体 → 空调群控 + 照明优化，节能30%
+- 🏭 产业园区 → 冷热电三联供 + 光储微网调度，节能28%
+- 🖥️ 数据中心 → 精密空调 + 群控优化，PUE降至1.28
+
+> 了解更多：查看完整版[《Wuvee智慧能源白皮书v1.0》](https://wuvee.com/support/download.html)
+
 
 ### 核心依赖
 
