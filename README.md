@@ -12,6 +12,100 @@ English | [简体中文](./README_CN.md)
 
 Some software functions have not been optimized yet, and there are certain bugs. They are currently being fixed.
 
+
+# Wuvee Spatial Intelligence SDK
+
+> AI-native spatial intelligence operating agent for smart campus operations
+
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![Python](https://img.shields.io/badge/python-3.10+-blue.svg)](https://python.org)
+[![Status](https://img.shields.io/badge/status-active-green.svg)]()
+
+## 🌟 Overview
+
+Wuvee Spatial Intelligence SDK provides the core framework for building AI Agent-driven smart campus operations. Instead of layering AI on top of legacy systems, we redesign campus operations from the Agent's perspective — making the building a self-regulating organism.
+
+**Key Innovation**: Space Event Bus — a unified protocol for cross-system dialogue, enabling HVAC, lighting, security, and access control systems to coordinate autonomously.
+
+## 🏗️ Architecture
+
+```
+┌─────────────────────────────────────────┐
+│              Cloud Layer                  │
+│   LLM Agent · Analytics · Digital Twin   │
+└──────────────────┬──────────────────────┘
+                   │ gRPC / WebSocket
+┌──────────────────┴──────────────────────┐
+│              Edge Layer                   │
+│   Rule Engine · Event Bus · Local Control │
+└──────────────────┬──────────────────────┘
+                   │ MQTT / Modbus / BACnet
+┌──────────────────┴──────────────────────┐
+│              Device Layer                 │
+│   Sensors · Cameras · Gateways · PLCs     │
+└─────────────────────────────────────────┘
+```
+
+## 🚀 Quick Start
+
+```bash
+pip install wuvee-spatial-sdk
+```
+
+```python
+from wuvee import SpaceAgent, EventBus, PerceptionLayer
+
+# Initialize the space agent
+agent = SpaceAgent(config="config.yaml")
+
+# Register perception sources
+perception = PerceptionLayer()
+perception.add_camera("entrance", rtsp_url="rtsp://...")
+perception.add_sensor("zone_3f_south", sensors=["temperature", "humidity", "co2"])
+
+# Connect to the event bus
+bus = EventBus(redis_url="redis://localhost:6379")
+agent.connect(bus)
+
+# Define a rule
+@agent.on("zone_occupancy_changed")
+def on_occupancy_change(event):
+    if event.occupancy == 0 and event.duration_minutes > 15:
+        agent.execute([
+            agent.hvac.set_mode(event.zone, "eco", target_temp=26),
+            agent.lighting.set_level(event.zone, 0),
+            agent.security.increase_patrol(event.zone, freq="2x")
+        ])
+
+# Start the agent
+agent.run()
+```
+
+## 📦 Core Modules
+
+| Module | Description |
+|:--|:--|
+| `wuvee.agent` | Space Agent core with rule engine + LLM hybrid reasoning |
+| `wuvee.bus` | Space Event Bus with CloudEvents compliance |
+| `wuvee.perception` | Unified perception layer for cameras, sensors, devices |
+| `wuvee.semantics` | Spatial semantic model (Building → Floor → Zone → Room → Desk) |
+| `wuvee.conflict` | Conflict resolution engine (Safety > Compliance > Energy > Comfort) |
+| `wuvee.digital_twin` | Real-time digital twin with state synchronization |
+
+## 🤝 Contributing
+
+We welcome contributions! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
+
+## 📄 License
+
+MIT License — see [LICENSE](LICENSE) for details.
+
+## 🏢 About
+
+Built by **Wuvee Group** — make cities valuable through spatial intelligence since 2002.
+
+🌐 [www.wuvee.com](https://www.wuvee.com) | 📧 Bs@wuvee.com
+
 ## Project Introduction
 BemIot Core is an out-of-the-box, lightweight digital infrastructure IoT platform that can be further developed. It provides a complete solution for IoT access, management, analysis, and application. The platform is developed based on the Java language and supports cross-platform independent deployment or distributed deployment, enabling the rapid establishment of a complete IoT business system that includes device management, rule linkage, alarm notification, video surveillance, edge computing, and other functions.
 
