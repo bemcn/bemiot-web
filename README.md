@@ -1,18 +1,3 @@
-# BemIot Core Platform
-
-![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/jetlinks/jetlinks-community/maven.yml?branch=master)
-![Version](https://img.shields.io/badge/version-1.0-brightgreen)
-![Java Version](https://img.shields.io/badge/java-17+-blue)
-![SpringBoot Version](https://img.shields.io/badge/springboot-3.2.3-blue)
-![Gradle Version](https://img.shields.io/badge/gradle-8.14.2+-blue)
-[![LICENSE](https://img.shields.io/badge/license-GPL3.0-success)](https://github.com/bemcn/BemIot/blob/master/LICENSE)
-[![GitHub stars](https://img.shields.io/github/stars/bemcn/BemIot?style=social)](https://github.com/bemcn/BemIot)
-
-English | [简体中文](./README_CN.md)
-
-Some software functions have not been optimized yet, and there are certain bugs. They are currently being fixed.
-
-
 # Wuvee Spatial Intelligence SDK
 
 > AI-native spatial intelligence operating agent for smart campus operations
